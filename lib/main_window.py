@@ -20,6 +20,7 @@ from tempfile import mkstemp
 
 # Modules
 from grp_buffer import *
+import art_buffer
 import nntp_io
 import flrn_config
 
