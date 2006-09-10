@@ -10,7 +10,9 @@ pygtk.require('2.0')
 import gtk
 
 # Modules
-import gui_modules
+from grp_buffer import GroupBuffer
+from sum_buffer import SummaryBuffer
+from art_buffer import ArticleBuffer
 import main_window
 import gltreebuffer
 
@@ -47,11 +49,10 @@ class MainWindow (main_window.SkelMainWindow):
         if conf_source.params['small_tree']:
             self.tree_tab = gltreebuffer.GLTreeBuffer(self)
         
-        self.summary_tab = gui_modules.SummaryBuffer(
-            self.panel_right.pack1, self)
+        self.summary_tab = SummaryBuffer(self.panel_right.pack1, self)
 
         # Panneau d'affichage de l'article
-        self.article_tab = gui_modules.ArticleBuffer(
+        self.article_tab = ArticleBuffer(
             None, False, self.panel_right.pack2, self)
         
         # Barre d'état

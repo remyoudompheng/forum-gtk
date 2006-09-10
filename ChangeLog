@@ -1,3 +1,10 @@
+2006-09-09  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* art_buffer.py, sum_buffer.py, grp_buffer.py: split
+	gui_modules.py in parts
+	* *.py: cosmetic changes to prepare Python 2.5 porting
+	* flrn_config.py: created ArticleRange class to handle newsrc
+
 2006-07-08  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
 
 	* main_window.py: new file to factorize gtk_gui and gtkgl_gui

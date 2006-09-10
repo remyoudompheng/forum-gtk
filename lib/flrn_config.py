@@ -59,30 +59,204 @@ def is_geek_time(start, end):
     s = int(start[0]) * 60 + int(start[1])
     t = time.localtime().tm_hour * 60 + time.localtime().tm_min
     u = int(end[0]) * 60 + int(end[1])
+#PYTHON2.5 MIGRATION
     if s <= u:
         return (s <= t <= u)
     else:
         return not(u <= t <= s)
+#    return ((s <= t <= u) if s <= u else not(u <= t <= s))
+# END MIGRATION
 
 class PercentTemplate(string.Template):
     delimiter='%'
 
+class ArticleRange(list):
+    """Contient une liste de singletons ou de couples représentant un
+    ensemble fini d'entiers"""
+    def __init__(self, numbers):
+        if numbers.strip():
+            self[:] = [[int(n) for n in k] for k in
+                       [rng.split('-') for rng in numbers.split(',')]]
+
+    def cleanup(self):
+        """Nettoyage"""
+        i = 1
+        while i < len(self):
+            if ((self[i][0] - self[i - 1][-1]) <= 1) and (self[i][-1] >= self[i - 1][0]):
+                self[i-1:i+1] = [[self[i - 1][0],
+                                  max(self[i - 1][-1], self[i][-1])]]
+                continue
+            i += 1
+
+    def trim(self, ends):
+        """On épure si nécessaire"""
+        while (len(self) > 0) and (self[0][0] < ends[0]):
+            if self[0][-1] < ends[0]:
+                del self[0]
+                continue
+            if self[0][-1] == ends[0]:
+                self[0] = [self[0][-1]]
+                continue
+            if self[0][-1] > ends[0]:
+                self[0] = [ends[0], self[0][-1]]
+                continue
+        # On épure de l'autre côté (inutile normalement)
+        while (len(self) > 0) and (self[-1][-1] > ends[1]):
+            if self[-1][0] > ends[1]:
+                del self[-1]
+                continue
+            if self[-1][0] == ends[1]:
+                self[-1] = [self[-1][0]]
+                continue
+            if self[-1][0] < ends[1]:
+                self[-1] = [self[-1][0], ends[1]]
+                continue
+
+    def to_string(self):
+#PYTHON2.5 MIGRATION
+        if len(self) == 0:
+            return ""
+        else:
+            return (','.join(['-'.join([str(n) for n in rng]) for rng in self]))
+#        return (','.join(['-'.join([str(n) for n in rng]) for rng in self]))
+#                if len(self) > 0 else '')
+# END MIGRATION
+
+    def how_many(self):
+        return sum([r[-1] - r[0] + 1 for r in self])
+
+    def owns(self, number):
+        for i in self:
+            if i[0] <= number <= i[-1]:
+                return True
+        return False
+    
+    def add_item(self, number):
+        """Marque comme lu"""
+        if self.owns(number): return False
+        if len(self) == 0:
+            self.append([number])
+            return        
+        if number < self[0][0]:
+            self.insert(0, [number])
+        elif number > self[-1][-1]:
+            self.append([number])
+        else:
+            for i in xrange(len(self)):
+                if number == (self[i][0] - 1):
+                    self[i] = [self[i][0] - 1, self[i][-1]]
+                    break
+                elif number == (self[i][-1] + 1):
+                    self[i] = [self[i][0], self[i][-1] + 1]
+                    break
+                if (i > 0) and (self[i - 1][-1] < number < self[i][0]):
+                    self.insert(i, [number])
+                    break
+        self.cleanup()
+        return True
+
+    def del_item(self, number):
+        """Marque comme non lu"""
+        if not self.owns(number): return False
+
+        for i in xrange(len(self)):
+            if number == self[i][0]:
+                if len(self[i]) == 1:
+                    del self[i]
+                else:
+                    self[i] = [self[i][0] + 1, self[i][-1]]
+                    if self[i][0] == self[i][1]:
+                        del self[i][1]
+                break
+            elif number == self[i][-1]:
+                if len(self[i]) == 1:
+                    del self[i]
+                else:
+                    self[i] = [self[i][0], self[i][-1] - 1]
+                    if self[i][0] == self[i][1]:
+                        del self[i][1]
+                break
+            elif (self[i][0] < number < self[i][-1]):
+                self[i:i+1] = [[self[i][0], number - 1],
+                                    [number + 1, self[i][-1]]]
+                if self[i][0] == self[i][1]:
+                    del self[i][1]
+                if self[i+1][0] == self[i+1][1]:
+                    del self[i+1][1]
+                break
+        self.cleanup()
+        return True
+
+    def add_range(self, range):
+        """Ajoute un intervalle"""
+        if len(self) == 0:
+            self.append([range[0], range[1]])
+        else:
+            # Insertion du bouzin
+            for i in xrange(len(self)):
+                if (range[0] - 1 <= self[i][-1]):
+                    if range[1] < self[i][0] - 1:
+                        self[i:i] = [[range[0], range[1]]]
+                        break
+                    elif self[i][0] - 1 <= range[1] :
+                        self[i] = [min(self[i][0], range[0]),
+                                  max(self[i][-1], range[1])]
+                    break
+        self.cleanup()
+        return True
+
+    def del_range(self,range):
+        """Ajoute un intervalle"""
+        i = 0
+        while i < len(self):
+            if range[0] <= self[i][0]:
+                if range[1] >= self[i][-1]:
+                    # On enlève tout
+                    del self[i]
+                    continue
+                else:
+                    # On enlève par la gauche
+                    self[i][0] = range[1] + 1
+                    break
+            if self[i][0] < range[0]:
+                if self[i][-1] > range[1]:
+                    # On enlève au milieu
+                    self[i:i+1] = [[self[i][0], range[0] - 1],
+                                  [range[1] + 1, self[i][-1]]]
+                    break
+                else:
+                    if self[i][-1] >= range[0]:
+                        # On enlève à droite
+                        self[i][-1] = range[0] - 1
+                    i += 1
+        self.cleanup()
+        return True
+                            
 class FlrnConfig:
     def make_reply(self, original):
         # En-têtes de la réponse
         reply = nntp_io.Article()
+#PYTHON2.5 MIGRATION
         if 'Followup-To' in original.headers:
             reply.headers["Newsgroups"] = original.headers['Followup-To']
         else:
             reply.headers["Newsgroups"] = original.headers['Newsgroups']
         if 'References' in original.headers:
-            reply.headers["References"] = original.headers['References'] + ' ' + original.headers['Message-ID']
+            reply.headers["References"] = original.headers['References'] + ' ' \
+                                          + original.headers['Message-ID']
         else:
             reply.headers['References'] = original.headers['Message-ID']
         if reply_regexp.match(original.headers['Subject']):
             reply.headers['Subject'] = original.headers['Subject']
         else:
             reply.headers["Subject"] = u'Re: ' + original.headers["Subject"]
+#        reply.headers["Newsgroups"] = (original.headers['Followup-To'] if 'Followup-To' in original.headers
+#                                       else original.headers['Newsgroups'])
+#        reply.headers["References"] = ((original.headers['References'] + ' ')
+#            if 'References' in original.headers else "") + original.headers['Message-ID']
+#        reply.headers["Subject"] = (u'Re: ' if reply_regexp.match(original.headers['Subject']) else "") \
+#                                   + original.headers["Subject"]
+# END MIGRATION
         reply.headers['From'] = self.from_header
 
         # Ligne d'attribution
@@ -93,10 +267,13 @@ class FlrnConfig:
         for a in group_parts[:-1]: group_abbr += a[0] + "."
         group_abbr += group_parts[-1]
 
+#PYTHON2.5 MIGRATION
         if author[0]:
             author = author[0]
         else:
             author = author[1]
+#       author = author[0] if author[0] else author[1]
+# END MIGRATION
 
         if not(self.params['include_in_edit']):
             reply.body = ""
@@ -157,12 +334,9 @@ class FlrnConfig:
                 elif t.group(2) == "!":
                     self.unsubscribed.add(t.group(1))
                 try:
-                    self.groups[t.group(1)] = [
-                        [int(n) for n in k] 
-                        for k in [rng.split('-') 
-                                  for rng in t.group(3).split(',')]]
+                    self.groups[t.group(1)] = ArticleRange(t.group(3))                    
                 except ValueError:
-                    self.groups[t.group(1)] = []
+                    self.groups[t.group(1)] = ArticleRange("")
 
         # On évite les grotesquitudes
         self.unsubscribed -= self.subscribed
@@ -170,85 +344,12 @@ class FlrnConfig:
     def register_read(self, group, number):
         """Marque comme lu"""
         nos = self.groups[group]
-        # On vérifie s'il est déjà lu.
-        read = False
-        for rng in nos:
-            if rng[0] <= number <= rng[-1]:
-                read = True
-        if read:
-            return
-        else:
-            self.unreads[group] -= 1
-
-        if len(nos) == 0:
-            nos.append([number])
-            return
-        
-        if number < nos[0][0]:
-            nos.insert(0, [number])
-        elif number > nos[-1][-1]:
-            nos.append([number])
-        else:
-            for i in xrange(len(nos)):
-                if number == (nos[i][0] - 1):
-                    nos[i] = [nos[i][0] - 1, nos[i][-1]]
-                    break
-                elif number == (nos[i][-1] + 1):
-                    nos[i] = [nos[i][0], nos[i][-1] + 1]
-                    break
-                if (i > 0) and (nos[i - 1][-1] < number < nos[i][0]):
-                    nos.insert(i, [number])
-                    break
-
-        # Fusion
-        for i in xrange(1, len(nos)):
-            if (nos[i][0] - nos[i - 1][-1]) <= 1:
-                nos[i-1:i+1] = [[nos[i - 1][0], nos[i][-1]]]
-                break
+        if nos.add_item(number): self.unreads[group] -= 1
         
     def register_unread(self, group, number):
         """Marque comme non-lu"""
         nos = self.groups[group]
-        # On vérifie s'il est déjà lu.
-        read = False
-        for rng in nos:
-            if rng[0] <= number <= rng[-1]:
-                read = True
-        if not read:
-            return
-        else:
-            self.unreads[group] -= 1
-
-        for i in xrange(len(nos)):
-            if number == nos[i][0]:
-                if len(nos[i]) == 1:
-                    del nos[i]
-                else:
-                    nos[i] = [nos[i][0] + 1, nos[i][-1]]
-                    if nos[i][0] == nos[i][1]:
-                        del nos[i][1]
-                break
-            elif number == nos[i][-1]:
-                if len(nos[i]) == 1:
-                    del nos[i]
-                else:
-                    nos[i] = [nos[i][0], nos[i][-1] - 1]
-                    if nos[i][0] == nos[i][1]:
-                        del nos[i][1]
-                break
-            elif (nos[i][0] < number < nos[i][-1]):
-                nos[i:i+1] = [[nos[i][0], number - 1],
-                                    [number + 1, nos[i][-1]]]
-                if nos[i][0] == nos[i][1]:
-                    del nos[i][1]
-                if nos[i+1][0] == nos[i+1][1]:
-                    del nos[i+1][1]
-                break
-        # Fusion
-        for i in xrange(1, len(nos)):
-            if (nos[i][0] - nos[i - 1][-1]) <= 1:
-                nos[i-1:i+1] = [[nos[i - 1][0], nos[i][-1]]]
-                break
+        if nos.del_item(number): self.unreads[group] += 1
     
     def save_newsrc(self):
         """Enregistre le newsrc"""
@@ -270,51 +371,22 @@ class FlrnConfig:
         f = open(newsrc_path, 'w')
 
         # Un peu de nettoyage
-        for g in self.groups:
-            # Fusion  
-            for i in xrange(1, len(self.groups[g])):
-                if (self.groups[g][i][0] - self.groups[g][i - 1][-1]) <= 1:
-                    self.groups[g][i-1:i+1] = [[self.groups[g][i - 1][0], 
-                                                self.groups[g][i][-1]]]
-                    break
+        for rng in self.groups.itervalues():
+            rng.cleanup()
         
         # Groupes pas nouveaux
         for g in order:
-            # Groupes abonnés
             if g in self.subscribed:
-                if len(self.groups[g]) == 0:
-                    f.write(g + ': \n')
-                    continue
-                read_list = ','.join(['-'.join([str(n) for n in rng])
-                                      for rng in self.groups[g]])
-                f.write(g + ': ' + read_list + '\n')
-            # Groupes pas abonnés
+                f.write(g + ': ' + self.groups[g].to_string() + '\n')
             if g in self.unsubscribed:
-                if len(self.groups[g]) == 0:
-                    f.write(g + '! \n')
-                    continue
-                read_list = ','.join(['-'.join([str(n) for n in rng])
-                                      for rng in self.groups[g]])
-                f.write(g + '! ' + read_list + '\n')
+                f.write(g + '! ' + self.groups[g].to_string() + '\n')
 
-        # Groupes abonnés
         for g in self.subscribed:
             if g not in order:
-                if len(self.groups[g]) == 0:
-                    f.write(g + ': \n')
-                    continue
-                read_list = ','.join(['-'.join([str(n) for n in rng])
-                                      for rng in self.groups[g]])
-                f.write(g + ': ' + read_list + '\n')
-        # Groupes pas abonnés
+                f.write(g + ': ' + self.groups[g].to_string() + '\n')
         for g in self.unsubscribed:
             if g not in order:
-                if len(self.groups[g]) == 0:
-                    f.write(g + '! \n')
-                    continue
-                read_list = ','.join(['-'.join([str(n) for n in rng])
-                                      for rng in self.groups[g]])
-                f.write(g + '! ' + read_list + '\n')
+                f.write(g + '! ' + self.groups[g].to_string() + '\n')
         f.close()
         
     def refresh_groups(self):
@@ -336,34 +408,10 @@ class FlrnConfig:
         for g in self.subscribed:
             ends = self.server.group_stats(g)
             read = self.groups[g]
-            # On épure si nécessaire
-            while (len(read) > 0) and (read[0][0] < ends[0]):
-                if read[0][-1] < ends[0]:
-                    del read[0]
-                    continue
-                if read[0][-1] == ends[0]:
-                    read[0] = [read[0][-1]]
-                    continue
-                if read[0][-1] > ends[0]:
-                    read[0] = [ends[0], read[0][-1]]
-                    continue
-            # On épure de l'autre côté (inutile normalement)
-            while (len(read) > 0) and (read[-1][-1] > ends[1]):
-                if read[-1][0] > ends[1]:
-                    del read[-1]
-                    continue
-                if read[-1][0] == ends[1]:
-                    read[-1] = [read[-1][0]]
-                    continue
-                if read[-1][0] < ends[1]:
-                    read[-1] = [read[-1][0], ends[1]]
-                    continue
+            read.trim(ends)
             # On compte le total moins les articles lus
-            num = ends[1] - ends[0] + 1
-            for val in read:
-                num += val[0] - val[-1] - 1
-            self.unreads[g] = num
-
+            self.unreads[g] = ends[1] - ends[0] + 1 - read.how_many()
+            
     def eval_string(self, s):
         if s.startswith("'") and s.startswith("'"):
             # Important d'avoir un eval pour les \n

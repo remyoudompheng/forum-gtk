@@ -19,7 +19,7 @@ import pango
 from tempfile import mkstemp
 
 # Modules
-import gui_modules
+from grp_buffer import *
 import nntp_io
 import flrn_config
 
@@ -35,9 +35,9 @@ class SkelMainWindow:
         model, group = widget.get_selected()
         if group:
             # On vérifie que c'est un vrai groupe.
-            if model.get_value(group, gui_modules.GRP_COLUMN_ISREAL):
+            if model.get_value(group, GRP_COLUMN_ISREAL):
                 self.current_group = model.get_value(
-                    group, gui_modules.GRP_COLUMN_NAME)
+                    group, GRP_COLUMN_NAME)
                 # Premier message non-lu
                 try:
                     first, last = self.conf.server.group_stats(
@@ -85,9 +85,9 @@ class SkelMainWindow:
                 model, row = group_widget.widget.get_selection().get_selected()
                 if row:
                     # On vérifie que c'est un vrai groupe.
-                    if model.get_value(row, gui_modules.GRP_COLUMN_ISREAL):
+                    if model.get_value(row, GRP_COLUMN_ISREAL):
                         data[0] = model.get_value(
-                            row, gui_modules.GRP_COLUMN_NAME)
+                            row, GRP_COLUMN_NAME)
 
         dialog.connect("response", get_user_entry, selected_group)
         if dialog.run() == gtk.RESPONSE_OK:
@@ -124,11 +124,11 @@ class SkelMainWindow:
         # Récupération de la sélection
         subscriptions = []
         def mark_as_subscribed(model, path, iter, data):
-            if model.get_value(iter, gui_modules.GRP_COLUMN_ISREAL):
+            if model.get_value(iter, GRP_COLUMN_ISREAL):
                 # C'est un vrai groupe
                 data.append(
-                    (model.get_value(iter, gui_modules.GRP_COLUMN_NAME),
-                     model.get_value(iter, gui_modules.GRP_COLUMN_SUBSCRIBED)))
+                    (model.get_value(iter, GRP_COLUMN_NAME),
+                     model.get_value(iter, GRP_COLUMN_SUBSCRIBED)))
                 
         def get_user_entry(widget, resp_id, data):
             if resp_id == gtk.RESPONSE_OK:
@@ -837,6 +837,6 @@ class SkelMainWindow:
         self.panel_big = gtk.HPaned()
         self.vbox_big.pack_start(self.panel_big, True, True, 0)
         self.panel_big.show()
-        self.group_tab = gui_modules.GroupBuffer(self, self.panel_big.pack1)
+        self.group_tab = GroupBuffer(self, self.panel_big.pack1)
         self.group_tab.widget.get_selection().connect(
             "changed", self.select_group_callback)

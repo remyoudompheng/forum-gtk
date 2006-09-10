@@ -1,4 +1,4 @@
-#! /usr/bin/env python2.4
+#! /usr/bin/env python2.5
 # -*- coding: utf-8 -*-
 
 # Flrn-gtk: fenêtre principale
@@ -24,10 +24,9 @@ Options:
 
 def main():
     # Récupération des options de la ligne de commande
-    optlist, args = getopt.getopt(
+    optlist = dict(getopt.getopt(
         sys.argv[1:], "cdf:hn:",
-        ['optname=', 'conf-dir=', 'debug', 'co', 'help', 'opengl'])
-    optlist = dict(optlist)
+        ['optname=', 'conf-dir=', 'debug', 'co', 'help', 'opengl'])[0])
 
     # L'aide
     if '-h' in optlist or '--help' in optlist:
@@ -63,11 +62,15 @@ def main():
         for g in conf_source.unreads:
             if conf_source.unreads[g] == 1:
                 print '  ' + g + ':', '1 article non lu.'
-                unreads += 1
             if conf_source.unreads[g] > 1:
                 print '  ' + g + ':', \
-                    conf_source.unreads[g], 'articles non lus.'
-                unreads += conf_source.unreads[g]
+                      conf_source.unreads[g], 'articles non lus.'
+#PYTHON2.5 MIGRATION
+#            if conf_source.unreads[g] > 0:
+#                print '  ' + g + ':',  conf_source.unreads[g], \
+#                      ('article non lu.' if conf_source.unreads[g] == 1
+#                       else 'articles non lus.')
+            unreads += conf_source.unreads[g]
         if unreads == 0:
             print 'Rien de nouveau.'
         elif unreads == 1:
@@ -85,11 +88,13 @@ def main():
 
     # Chargement de l'interface avec OpenGL ou pas
     if '--opengl' in optlist:
-        import gtkgl_gui
-        gui = gtkgl_gui.MainWindow(conf_source)
+        import gtkgl_gui as gui_module
     else:
-        import gtk_gui 
-        gui = gtk_gui.MainWindow(conf_source)
+        import gtk_gui as gui_module
+                            
+#PYTHON2.5 MIGRATION
+#    import (gtkgl_gui if '--opengl' in optlist else gtk_gui) as gui_module
+    gui = gui_module.MainWindow(conf_source)
         
     import gtk
     gtk.main()

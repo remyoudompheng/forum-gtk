@@ -11,8 +11,10 @@ import gtk
 import gtk.gdk
 
 # Modules
-import gui_modules
-import tree_buffer
+from grp_buffer import GroupBuffer
+from sum_buffer import SummaryBuffer
+from art_buffer import ArticleBuffer
+from tree_buffer import TreeBuffer
 import main_window
 
 class MainWindow (main_window.SkelMainWindow):
@@ -51,19 +53,16 @@ class MainWindow (main_window.SkelMainWindow):
             self.panel_right.pack1(self.panel_topright)
             self.panel_topright.show()
             
-            self.summary_tab = gui_modules.SummaryBuffer(
-                self.panel_topright.pack1, self)
-            self.tree_tab = tree_buffer.TreeBuffer(
-                self, self.panel_topright.pack2)
+            self.summary_tab = SummaryBuffer(self.panel_topright.pack1, self)
+            self.tree_tab = TreeBuffer(self, self.panel_topright.pack2)
             self.summary_tab.data.connect(
                 "row-changed", self.summary_tab.changed_tree_callback)
         else:
             # Juste le sommaire
-            self.summary_tab = gui_modules.SummaryBuffer(
-                self.panel_right.pack1, self)
+            self.summary_tab = SummaryBuffer(self.panel_right.pack1, self)
 
         # Panneau d'affichage de l'article
-        self.article_tab = gui_modules.ArticleBuffer(
+        self.article_tab = ArticleBuffer(
             None, False, self.panel_right.pack2, self)
         
         # Barre d'état
