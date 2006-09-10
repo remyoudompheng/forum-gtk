@@ -4,20 +4,20 @@
 # Flrn-gtk: fenêtre principale
 # Rémy Oudompheng, Noël 2005
 
-import getopt, os, sys
-import flrn_config
+import getopt, os, sys, locale
 
 # Profileur et debug
-import hotshot, pdb
-prof = hotshot.Profile(os.path.expanduser("~/src/forum-gtk/forum-gtk.prof"))
-prof.start()
+# import hotshot, pdb
+# prof = hotshot.Profile(os.path.expanduser("~/src/forum-gtk/forum-gtk.prof"))
+# prof.start()
 
 
 HELP_STRING = u"""Syntaxe: program [-ch] [-d dir] [-n name] [--opengl]
 Options:
+ -d, --debug        active les messages d'information sur stderr
  -c                 affiche le nombre de messages non lus
  -h, --help         affiche cette aide
- -d, --conf-dir     indique le dossier contenant les fichiers de configuration
+ -f, --conf-dir     indique le dossier contenant les fichiers de configuration
  -n, --optname name indique le groupe d'options à utiliser
  --opengl           utiliser l'arbre 3D"""
     
@@ -25,8 +25,8 @@ Options:
 def main():
     # Récupération des options de la ligne de commande
     optlist, args = getopt.getopt(
-        sys.argv[1:], "cd:hn:",
-        ['optname=', 'conf-dir=', 'co', 'help', 'opengl'])
+        sys.argv[1:], "cdf:hn:",
+        ['optname=', 'conf-dir=', 'debug', 'co', 'help', 'opengl'])
     optlist = dict(optlist)
 
     # L'aide
@@ -35,6 +35,7 @@ def main():
         sys.exit(0)
 
     # Chargement des options
+    import flrn_config
     try:
         server = optlist['--server']
     except KeyError:
@@ -43,8 +44,15 @@ def main():
     try:
         conf_dir = optlist['--conf-dir']
     except KeyError:
-        try: conf_dir = optlist['-d']
+        try: conf_dir = optlist['-f']
         except KeyError: conf_dir = None
+
+    # Messages de debug
+    if ('-d' in optlist) or ('--debug' in optlist):
+        flrn_config.debug_fd = sys.stderr
+        flrn_config.debug_output(u"[Main] Activation des messages de déboguage")
+    else:
+        flrn_config.debug_fd = open(os.path.devnull, 'w')
 
     conf_source = flrn_config.FlrnConfig(conf_dir, server)
 
@@ -89,4 +97,4 @@ def main():
 if __name__ == "__main__":
     main()
     
-prof.close()
+# prof.close()

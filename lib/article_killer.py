@@ -5,6 +5,7 @@
 
 import sys
 import re
+import flrn_config
 match_regexp = re.compile('^:(.*):([^:]*)')
 rule_regexp = re.compile("^\*(\^?)('?)([^:]*):(.*)")
 RULE_REGEXP = 0
@@ -23,9 +24,9 @@ class KillRuleCondition:
         """Match sur regexp"""
         m = self.rule.match(string)
         if m and (m.start() == 0) and (m.end() == len(string)):
-            print >> sys.stderr, \
-                '[Killfile] Match', string, 'on', self.header + ":", \
-                self.rule.pattern
+            flrn_config.debug_output('[Killfile] Match ' + string
+                                     + ' on ' +  self.header + " : "
+                                     + self.rule.pattern)
             return not self.negate
         return self.negate
     
@@ -55,16 +56,16 @@ class KillRule:
         """Matche un groupe selon (re)self.group_rule"""
         m = self.group_rule.match(string)
         if m and (m.start() == 0) and (m.end() == len(string)):
-            print >> sys.stderr, \
-                '[Killfile] Match', string, 'on', self.group_rule.pattern
+            flrn_config.debug_output('[Killfile] Match ' +  string 
+                                     + ' on ' + self.group_rule.pattern)
             return True
         return False
 
     def group_list_match(self, string):
         """Matche un groupe selon (string*)self.group_rule"""
         if string in self.group_rule:
-            print >> sys.stderr, \
-                '[Killfile] Match', string, 'in <list>'
+            flrn_config.debug_output('[Killfile] Match ' +  string 
+                                     + ' in list ' + repr(self.group_rule))
             return True
         return False
 

@@ -7,7 +7,7 @@ import os
 import socket
 from pwd import getpwuid
 import re,time
-import string
+import string, locale
 import email.Utils
 import nntp_io
 import sys
@@ -15,7 +15,11 @@ import sys
 from article_killer import *
 
 # Constantes
-PROGRAM_VERSION = "0.6"
+PROGRAM_VERSION = "0.7"
+debug_fd = sys.stderr
+
+def debug_output(string):
+    print >> debug_fd, string.encode(locale.getpreferredencoding())
 
 # Expressions régulières du flrnrc
 encoding_regexp = re.compile(
@@ -363,9 +367,9 @@ class FlrnConfig:
     def eval_string(self, s):
         if s.startswith("'") and s.startswith("'"):
             # Important d'avoir un eval pour les \n
-            return eval(s, {}, {}).decode(self.encoding)
+            return eval(s, {}, {}).decode('utf-8')
         if s.startswith('"') and s.startswith('"'):
-            return eval(s, {}, {}).decode(self.encoding)
+            return eval(s, {}, {}).decode('utf-8')
         return s.strip("'\"")
     
     def __init__(self, config_dir, mode):
@@ -448,11 +452,13 @@ class FlrnConfig:
             t = setfalse_regexp.match(line)
             if t:
                 self.params[t.group(1)] = False
+                debug_output("[FlrnConfig] " + t.group(1) + " set to False")
                 continue
             # 2e cas: set <foobar>
             t = settrue_regexp.match(line)
             if t:
                 self.params[t.group(1)] = True
+                debug_output("[FlrnConfig] " + t.group(1) + " set to True")
                 continue
             # 3e cas: set <foobar>=<value>
             t = setvalue_regexp.match(line)
@@ -460,15 +466,21 @@ class FlrnConfig:
                 value = t.group(2)
                 if (value == "0") or (value == "no"):
                     self.params[t.group(1)] = False
+                    debug_output("[FlrnConfig] " + t.group(1) + " set to False")
                 elif (value == "1") or (value == "yes"):
                     self.params[t.group(1)] = True
+                    debug_output("[FlrnConfig] " + t.group(1) + " set to True")
                 else:
                     self.params[t.group(1)] = self.eval_string(value)
+                    debug_output("[FlrnConfig] " + t.group(1)
+                                 + " set to " + repr(self.params[t.group(1)]))
                 continue
             # 4e cas: my_hdr Foobar: Value
             t = myheader_regexp.match(line)
             if t:
                 self.my_hdrs[t.group(1)] = self.eval_string(t.group(2))
+                debug_output("[FlrnConfig] Header %s set to %s" %
+                             (t.group(1), repr(self.my_hdrs[t.group(1)])))
                 continue
             # 5e cas: header (list|hide)
             t = showheader_regexp.match(line)
@@ -510,21 +522,20 @@ class FlrnConfig:
         # Lecture du killfile
         self.killrules = []
         if 'kill_file_name' in self.params:
-            print >> sys.stderr, \
-                "[FlrnConfig] Ouverture de",  \
-                self.params['kill_file_name']
+            debug_output("[FlrnConfig] Ouverture de %s" % 
+                         self.params['kill_file_name'])
             try:
                 f = open(self.config_dir.rstrip('/')
                          + '/' + self.params['kill_file_name'], 'r')
-                print >> sys.stderr, \
-                    "[FlrnConfig] Ouvert", self.params['kill_file_name']
+                debug_output("[FlrnConfig] Ouvert "
+                             + self.params['kill_file_name'])
                 for t in f.read().split("\n\n"):
                     k = KillRule(t.strip("\n").split("\n"), self.config_dir)
                     if not k.killme:
                         self.killrules.append(k)
                 f.close()
-            except IOError, truc:
-                print >> sys.stderr, "[FlrnConfig]", truc
+            except IOError, (errno, truc):
+                debug_output("[FlrnConfig] Erreur %s : %s" % (errno, truc))
                 pass
         
 

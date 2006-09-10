@@ -37,6 +37,13 @@ GRP_COLUMN_CAPTION = 1
 GRP_COLUMN_SUBSCRIBED = 2
 GRP_COLUMN_ISREAL = 3
 
+SUM_COLUMN_MSGID = 0
+SUM_COLUMN_NUM = 1
+SUM_COLUMN_SUBJ = 2
+SUM_COLUMN_FROM = 3
+SUM_COLUMN_DATE = 4
+SUM_COLUMN_READ = 5
+
 # Panneau d'affichage de groups
 class GroupBuffer:
     # Affichage du panneau Groupes
@@ -410,7 +417,7 @@ class SummaryBuffer:
             for t in xrange(len(overview[ - 1 - i][5])):
                 ref_id = overview[ - 1 - i][5][- 1 - t]
                 # Déja traité ?
-                if ref_id in ids: break
+                if ref_id in ids: continue
                 art = self.parent.conf.server.get_article_by_msgid(ref_id)
                 if not(art): continue
                 # Sorti du conti ?
@@ -504,13 +511,15 @@ class SummaryBuffer:
                     if K.article_match(heads):
                         read = K.read_after
                         if K.read_after:
-                            print >> sys.stderr, \
-                                u'[SumBuffer] Marqué', number, 'comme lu'
+                            flrn_config.debug_output(
+                                u'[SumBuffer] Marqué ' 
+                                + str(number) + ' comme lu ')
                             self.parent.conf.register_read(
                                 self.parent.current_group, number)
                         else:
-                            print >> sys.stderr, \
-                                '[SumBuffer] Marqué', number, 'comme non-lu'
+                            flrn_config.debug_output(
+                                u'[SumBuffer] Marqué ' 
+                                + str(number) + ' comme non lu ')
                             self.parent.conf.register_unread(
                                 self.parent.current_group, number)
             # Auteur ?
@@ -594,29 +603,40 @@ class SummaryBuffer:
         return False
 
     def changed_tree_callback(self, model, path, iter):
+        '''Callback de mise à jour de l'arbre'''
         if self.current_node:
             self.parent.tree_tab.make_tree(
                 model, model.get_iter((model.get_path(self.current_node)[0],)))
             self.parent.tree_tab.draw_tree()
         return False
 
-    def read_toggle_callback(self, widget, path, data=None):
-        """Marque comme lu/non-lu"""
-        if self.data.get_value(self.data.get_iter(path), 5):
-            # Marquer comme non-lu
-            self.data.set_value(self.data.get_iter(path), 5, False)
-            self.parent.conf.register_unread(
-                self.parent.current_group,
-                self.data.get_value(self.data.get_iter(path), 1))
-        else:
+    def read_toggle(self, iter, read):
+        '''Change l'état et met à jour la liste de lus'''
+        self.data.set_value(iter, SUM_COLUMN_READ, read)
+        if read:
             # Marquer comme lu
-            self.data.set_value(self.data.get_iter(path), 5, True)
+            flrn_config.debug_output("[SumBuffer] Article %d lu" % 
+                                     self.data.get_value(iter, SUM_COLUMN_NUM))
             self.parent.conf.register_read(
                 self.parent.current_group,
-                self.data.get_value(self.data.get_iter(path), 1))
+                self.data.get_value(iter, SUM_COLUMN_NUM))
+        else:
+            # Marquer comme non lu
+            flrn_config.debug_output("[SumBuffer] Article %d non lu" % 
+                                     self.data.get_value(iter, SUM_COLUMN_NUM))
+            self.parent.conf.register_unread(
+                self.parent.current_group,
+                self.data.get_value(iter, SUM_COLUMN_NUM))
+
+    def read_toggle_callback(self, widget, path, data=None):
+        '''Callback pour changer l'état'''
+        self.read_toggle(
+            self.data.get_iter(path),
+            not self.data.get_value(self.data.get_iter(path), SUM_COLUMN_READ))
 
     def set_replies_read(self, iter, read):
-        self.data.set_value(iter, 5, read)
+        '''Modification d'état récursive'''
+        self.read_toggle(iter, read)
         for i in xrange(self.data.iter_n_children(iter)):
             self.set_replies_read(self.data.iter_nth_child(iter, i), read)
 

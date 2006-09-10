@@ -12,6 +12,7 @@ header_regexp = re.compile("([^ :]*): (.*)")
 
 import email.Header
 import email.Utils
+import flrn_config
 
 # Codes valides :
 # 211 GROUP
@@ -107,7 +108,7 @@ class NewsServer:
         try:
             resp, count, first, last, name = self.socket.group(group)
         except nntplib.NNTPPermanentError, handler:
-            if handler.args[0].startswith('503 Timoeout'):
+            if handler.args[0].startswith('503 Timeout'):
                 # On relance la connexion
                 self.retry_connect()
                 resp, count, first, last, name = self.socket.group(group)
@@ -133,7 +134,7 @@ class NewsServer:
         try:
             resp, count, first, last, name = self.socket.group(group)
         except nntplib.NNTPPermanentError, handler:
-            if handler.args[0].startswith('503 Timoeout'):
+            if handler.args[0].startswith('503 Timeout'):
                 # On relance la connexion
                 self.retry_connect()
                 resp, count, first, last, name = self.socket.group(group)
@@ -161,7 +162,7 @@ class NewsServer:
             resp, respcode, id, headers = self.socket.head(msgid)
             resp, respcode, id, body = self.socket.body(msgid)
         except nntplib.NNTPPermanentError, handler:
-            if handler.args[0].startswith('503 Timoeout'):
+            if handler.args[0].startswith('503 Timeout'):
                 # On relance la connexion
                 self.retry_connect()
                 resp, respcode, id, headers = self.socket.head(msgid)
@@ -180,7 +181,7 @@ class NewsServer:
             self.socket.group(group)
             resp, num, msgid = self.socket.stat(str(artno))
         except nntplib.NNTPPermanentError, handler:
-            if handler.args[0].startswith('503 Timoeout'):
+            if handler.args[0].startswith('503 Timeout'):
                 # On relance la connexion
                 self.retry_connect()
                 self.socket.group(group)
@@ -215,7 +216,7 @@ class NewsServer:
         try:
             code, group_list = self.socket.list()
         except nntplib.NNTPPermanentError, handler:
-            if handler.args[0].startswith('503 Timoeout'):
+            if handler.args[0].startswith('503 Timeout'):
                 # On relance la connexion
                 self.retry_connect()
                 code, group_list = self.socket.list()
@@ -241,7 +242,7 @@ def translate_header(header):
             try:
                 decoded = decoded[0][0].decode(decoded[0][1])
             except (LookupError, UnicodeDecodeError):
-                sys.stderr.write("[Encodage foireux] " + repr(header) + '\n')
+                flrn_config.debug_output("[Encodage foireux] " + repr(header) + '\n')
                 decoded = decoded[0][0].decode('latin-1')
             s = s.replace(encoded, decoded)
     return s
@@ -301,9 +302,8 @@ class Article:
             try:
                 self.body += l.decode(charset) + '\n'
             except (LookupError, UnicodeDecodeError):
-                print >> sys.stderr, \
-                    '[Encodage foireux] Soi-disant', charset
-                print >> sys.stderr, '    ' + repr(l)
+                flrn_config.debug_output('[Encodage foireux] Soi-disant '
+                                         + charset + "\n    " + repr(l))
                 self.body += l.decode('latin-1') + '\n'
         return True
 
