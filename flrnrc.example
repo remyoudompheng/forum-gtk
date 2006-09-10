@@ -1,0 +1,16 @@
+# Toggles abbreviated group names in Group tab
+set abbr_group_names=no
+
+# Distance maximale à laquelle chercher les enfants et cousins
+set max_backtrack=500
+set max_foretrack=500
+
+# Customize cancel messages
+set cancel_message='This message is canceled by Forum-GTK ' + PROGRAM_VERSION
+
+# Sets bounds for news reading time
+set geek_start_time="00:00"
+set geek_end_time="00:00"
+
+
+

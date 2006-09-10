@@ -1,0 +1,5 @@
+:regexp:
+*From: .*connard.*
+Tread
+
+(?!regexp) -> négation d'une reexp (cf Python regexps)

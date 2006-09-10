@@ -1,0 +1,140 @@
+2006-06-20  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* flrn_config.py,gui_modules.py: minor bugfixes
+
+2006-06-12  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* gtk_gui.py, gtkgl_gui.py: update unreads when modifying
+	subscriptions (fixes KeyError)
+
+2006-06-03  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+        * main.py: new file for easier modification of option parsing
+	* main.py: added support for -c (summary of unread articles)
+	* The --server option is now called --optname
+
+2006-05-30  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* flrn_config.py: fixed encoding issue in parsing config file,
+	causing misencoding of cancel messages 
+
+2006-05-12  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* nntp_io.py: changed to use the encoding chosen by user if given
+
+2006-05-11  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+	
+	* gltreebuffer.py, gtkgl_gui.py: added OpenGL TreeBuffer using
+	Visual module
+
+2006-05-09  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* flrn_config.py: replaced map() and reduce() calls by list
+	comprehensions.	
+	* flrn_config.py: replace unreads() by update_unreads() to
+	prevent	getting the whole list for each nextunread call.
+
+2006-05-07  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+	
+	* Bumped version number to 0.6
+        * article_killer.py: first imprementation of kill files
+	* flrn_config.py: reads killfiles
+	* gui_modules.py: applies killfiles on displaying summary
+
+2006-03-20  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* gtk_gui.py: export thread tree as PNG image
+
+2006-03-17  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* gui_modules.py: make the Summary buffer update when following
+	Msgid links or backing up to parent
+	
+2006-02-22  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* gui_modules.py: fixed stoopid bug involving missing "abs"...
+
+2006-02-19  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* gui_modules.py: added backracking in overview to find 
+	cousins and children
+
+2006-02-17  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+	
+	* gtk_gui.py: added rot13 command
+	* gui_modules.py: added rot13 filter
+	* nntp_io.py: added decoding of Quoted-Printable
+
+2006-02-14  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* gtk_gui.py: begun OpenGL tree
+	
+2006-02-13  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* gtk_gui.py: handle "small_tree" option (make TreeBuffer optional)
+
+2006-02-12  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* nntp_io.py: better handling of misencoded strings
+
+2006-02-09  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* gui_modules.py: fixed bugs in read articles registering
+	* gui_modules.py: automatic scrolling of article tree
+
+2006-02-09  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* gui_modules.py: fixed "Réponse à" header disappearance
+	* gui_modules.py: changed group tree drawing method
+	* gui_modules.py: new "abbr_group_names" option for short group names
+
+2006-02-08  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* flrn_config.py: changed save_newsrc to preserve newsrc ordering
+	* gtk_gui.py: GotoParent action
+
+2006-02-07  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* flrn_config.py: added geek_{start,end}_time options, to help
+		          geeks wanting to sleep
+
+2006-02-06  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* gtk_gui.py: Added menu entry "Quit without saving".
+	* gtk_gui.py: The right panel separator now remembers its position.
+
+2006-02-05  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* nntp_io.py : (minor) Added an handler for "No such article" errors
+
+2006-02-03  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* gui_modules.py: Added menu entry to mark a range of articles as (un)read
+	
+2006-01-31  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* Version number changed to 0.5
+	* Added line wrapping to the article editor
+	* Removed useless checkboxes from subscriptions dialog
+
+2006-01-24  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* Added tree representation of threads
+
+2006-01-15  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* Added context menus to groups and articles
+
+2006-01-10  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* Added colours to articles
+	
+2005-12-30  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* First alpha version (0.1) :
+	- Article, Summary, and Group Buffer done
+	- Ability to cancel and supersede
+
+2005-12-20  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* Begun development
