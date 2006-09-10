@@ -79,6 +79,7 @@ class GroupBuffer:
                     root, format_node(list[0], depth))
                 return
             subtrees = {}
+            ordered_subtrees = []
             # Si jamais la hiérarchie correspond à un nœud
             node = None
             newroot = root
@@ -90,6 +91,7 @@ class GroupBuffer:
                 # On regarde l'enbranchement et on le crée si nécessaire
                 if l[0][depth] not in subtrees:
                     subtrees[l[0][depth]] = []
+                    ordered_subtrees.append(l[0][depth])
                 subtrees[l[0][depth]].append(l)
             if node:
                 # Il y a un vrai groupe, on le met
@@ -100,8 +102,8 @@ class GroupBuffer:
                 newroot = self.data.append(
                     root, ["", ".".join(list[0][0][:depth]),
                            False, False, "normal"])
-            for b in subtrees.itervalues():
-                grow_tree(newroot, b, depth + 1)
+            for b in ordered_subtrees:
+                grow_tree(newroot, subtrees[b], depth + 1)
 
         self.data.clear()
         try:

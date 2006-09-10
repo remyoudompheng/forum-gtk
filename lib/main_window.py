@@ -365,7 +365,7 @@ class SkelMainWindow:
         else:
             draft.headers['Newsgroups'] = ""
         draft.headers['Subject'] = "(mettre un sujet)"
-        editor = gui_modules.ArticleEditor(draft, self.conf)
+        editor = art_buffer.ArticleEditor(draft, self.conf)
         editor.window.connect("delete_event",
                               self.editor_die_callback, editor)
         editor.window.show_all()
@@ -376,7 +376,7 @@ class SkelMainWindow:
                 self.current_article)
             draft = self.conf.make_reply(original)
             del original
-            editor = gui_modules.ArticleEditor(draft, self.conf)
+            editor = art_buffer.ArticleEditor(draft, self.conf)
             editor.window.connect("delete_event",
                                   self.editor_die_callback, editor)
             editor.window.show_all()
@@ -453,7 +453,7 @@ class SkelMainWindow:
                 if h in self.conf.supersede_remove_headers:
                     del draft.headers[h]
 
-            editor = gui_modules.ArticleEditor(draft, self.conf)
+            editor = art_buffer.ArticleEditor(draft, self.conf)
             editor.window.connect("delete_event",
                                   self.editor_die_callback, editor)
             editor.window.show_all()
