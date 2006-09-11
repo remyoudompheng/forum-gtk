@@ -125,7 +125,7 @@ class SummaryBuffer:
             del self.nodes
         except: pass
         self.nodes = {}
-        read_list = self.parent.conf.groups[self.parent.current_group]
+
         # Les articles inexistants sont marqués comme lus dans le newsrc
         for i in vanished:
             self.parent.conf.register_read(self.parent.current_group, int(i))
@@ -136,10 +136,8 @@ class SummaryBuffer:
         
         for i in xover:
             number = int(i[0])
-            read = False
             # Lu ?
-            for j in read_list:
-                read = read or (j[0] <= number <= j[-1])
+            read = self.parent.conf.groups[self.parent.current_group].owns(number)
             subject = nntp_io.translate_header(i[1])
             # Application des règles
             for K in To_Apply:
@@ -165,6 +163,17 @@ class SummaryBuffer:
                                 + str(number) + ' comme non lu ')
                             self.parent.conf.register_unread(
                                 self.parent.current_group, number)
+
+            # Mise à jour des lus
+            caption = self.parent.group_tab.data.get_value(
+                self.parent.group_tab.group2node[self.parent.current_group],
+                GRP_COLUMN_CAPTION).split(":")
+            self.parent.group_tab.data.set_value(
+                self.parent.group_tab.group2node[self.parent.current_group],
+                GRP_COLUMN_CAPTION,
+                str(self.parent.conf.unreads[self.parent.current_group])
+                + ':' + caption[1])
+            
             # Auteur ?
             real_name, addr = email.Utils.parseaddr(
                 nntp_io.translate_header(i[2]))
