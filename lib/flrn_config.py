@@ -452,8 +452,8 @@ class FlrnConfig:
         self.params['include_in_edit'] = True
         self.params['prefixe_groupe'] = ''
         self.params['abbr_group_names'] = False
-        self.params['max_backtrack'] = 500
-        self.params['max_foretrack'] = 500
+        self.params['max_backtrack'] = 200
+        self.params['max_foretrack'] = 200
 
         self.params['small_tree'] = True
         self.params['with_cousins'] = False

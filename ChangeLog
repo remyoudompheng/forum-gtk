@@ -1,3 +1,7 @@
+2006-09-18  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* flrn_config.py: change backtrack default range to 200
+
 2006-09-09  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
 
 	* art_buffer.py, sum_buffer.py, grp_buffer.py: split
@@ -26,7 +30,7 @@
 
 2006-06-03  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
 
-        * main.py: new file for easier modification of option parsing
+	* main.py: new file for easier modification of option parsing
 	* main.py: added support for -c (summary of unread articles)
 	* The --server option is now called --optname
 
