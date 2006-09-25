@@ -117,11 +117,10 @@ class GroupBuffer:
         self.widget.expand_all()
 
     def refresh_tree(self, all_groups = False):
-        if not(all_groups):
-            arts = self.parent.conf.unreads
 #PYTHON2.5 MIGRATION
         digits = 0
-        if len(arts):
+        if not(all_groups):
+            arts = self.parent.conf.unreads
             digits = len(str(max(arts.values())))
 #            digits = (len(str(max(arts.values())))
 #                      if len(arts) else 0)

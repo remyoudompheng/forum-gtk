@@ -64,18 +64,18 @@ class SummaryBuffer:
                 if ref_id in ids: continue
                 art = self.parent.conf.server.get_article_by_msgid(ref_id)
                 if not(art): continue
-                # Sorti du conti ?
-                if group not in art.headers['Newsgroups'].strip().split(','):
-                    break
-                # On trouve le numéro
+                # Sorti du conti et numéro ?
+                sorti = True
                 for xref in art.headers['Xref'].strip().split():
                     if xref.split(':')[0] == group:
+                        sorti = False
                         art_no = int(xref.split(':')[1])
                         if art_no < lowest: lowest = art_no
                         break
-                ids.add(ref_id)
-                xover[0:0] = self.parent.conf.server.overview(
-                    group, art_no, art_no)[0]
+                if not(Sorti):
+                    ids.add(ref_id)
+                    xover[0:0] = self.parent.conf.server.overview(
+                        group, art_no, art_no)[0]
         
         if self.parent.conf.params['with_cousins']:
             # On ajoute les cousins

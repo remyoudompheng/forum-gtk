@@ -20,7 +20,7 @@ from tempfile import mkstemp
 
 # Modules
 from grp_buffer import *
-import art_buffer
+import art_buffer,grp_buffer
 import nntp_io
 import flrn_config
 
@@ -116,7 +116,7 @@ class SkelMainWindow:
         dialog.vbox.pack_start(gtk.Label(
             u"Cochez les groupes que vous souhaitez lire"), False, False, 5)
         # Un arbre avec des cases à cocher
-        group_widget = gui_modules.GroupBuffer(self, dialog.vbox.pack_start, True)
+        group_widget = grp_buffer.GroupBuffer(self, dialog.vbox.pack_start, True)
         group_widget.refresh_tree(True)
 
         dialog.vbox.show_all()
