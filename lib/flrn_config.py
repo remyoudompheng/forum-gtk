@@ -107,8 +107,12 @@ class ArticleRange(list):
                 continue
 
     def to_string(self):
-        return (','.join(['-'.join([str(n) for n in rng]) for rng in self]))
-                if len(self) > 0 else '')
+        return (
+            ','.join(
+                ['-'.join([str(n) for n in rng])
+                 for rng in self]
+            )
+        ) if len(self) > 0 else ''
 
     def how_many(self):
         return sum([r[-1] - r[0] + 1 for r in self])
