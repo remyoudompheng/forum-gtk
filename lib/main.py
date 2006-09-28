@@ -81,7 +81,10 @@ def main():
         sys.exit(0)
 
     # Chargement de l'interface avec OpenGL ou pas
-    import (gtkgl_gui if '--opengl' in optlist else gtk_gui) as gui_module
+    if '--opengl' in optlist:
+        import gtkgl_gui as gui_module
+    else:
+        import gtk_gui as gui_module
     gui = gui_module.MainWindow(conf_source)
         
     import gtk
