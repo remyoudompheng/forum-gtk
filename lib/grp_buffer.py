@@ -36,38 +36,18 @@ class GroupBuffer:
         def format_node(item, depth):
             "Formate tout bien"
             # Selon qu'on est dans la liste des groupes, ou pas
-#PYTHON2.5 MIGRATION
-            if item[1]['arts']:
-                caption = item[1]['arts'] + ':'
-                if int(item[1]['arts']) > 0:
-                    font = "monospace bold"
-                else:
-                    font = "monospace italic"
-            else:
-                caption = ""
-                font = "monospace"
+            caption = (item[1]['arts'] + ':') if item[1]['arts'] else ''
+            font = 'monospace' + (
+                '' if not item[1]['arts'] else (
+                ' bold' if int(item[1]['arts']) > 0 else ' italic'))
+
             # Le reste
             if self.parent.conf.params['abbr_group_names']:
                 caption += ".".join([s[:1] for s in item[0][:depth - 1]])
             else:
                 caption += ".".join(item[0][:depth - 1])
-            if depth == 1:
-                caption += ".".join(item[0][depth - 1:])
-            else: caption += "." + ".".join(item[0][depth - 1:])
-                        
-#            caption = (item[1]['arts'] + ':' if item[1]['arts'] else '')
-#            font = 'monospace' + (
-#                '' if not item[1]['arts'] else (
-#                ' bold' if int(item[1]['arts']) > 0 else ' italic'))
-#
-#            # Le reste
-#            if self.parent.conf.params['abbr_group_names']:
-#                caption += ".".join([s[:1] for s in item[0][:depth - 1]])
-#            else:
-#                caption += ".".join(item[0][:depth - 1])
-#            caption += ("." if depth > 1 else "") + \
-#                       ".".join(item[0][depth - 1:])
-#END MIGRATION
+            caption += ("." if depth > 1 else "") + \
+                       ".".join(item[0][depth - 1:])
 
             return [item[1]['name'], caption, item[1]['subd'], True, font]
 
@@ -117,14 +97,11 @@ class GroupBuffer:
         self.widget.expand_all()
 
     def refresh_tree(self, all_groups = False):
-#PYTHON2.5 MIGRATION
         digits = 0
         if not(all_groups):
             arts = self.parent.conf.unreads
-            digits = len(str(max(arts.values())))
-#            digits = (len(str(max(arts.values())))
-#                      if len(arts) else 0)
-# END MIGRATION
+            digits = (len(str(max(arts.values())))
+                      if len(arts) else 0)
             self.display_tree(
                 [[g.replace(
                 self.parent.conf.params['prefixe_groupe'],"", 1).split('.'), 

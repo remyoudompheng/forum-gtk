@@ -59,13 +59,7 @@ def is_geek_time(start, end):
     s = int(start[0]) * 60 + int(start[1])
     t = time.localtime().tm_hour * 60 + time.localtime().tm_min
     u = int(end[0]) * 60 + int(end[1])
-#PYTHON2.5 MIGRATION
-    if s <= u:
-        return (s <= t <= u)
-    else:
-        return not(u <= t <= s)
-#    return ((s <= t <= u) if s <= u else not(u <= t <= s))
-# END MIGRATION
+    return ((s <= t <= u) if s <= u else not(u <= t <= s))
 
 class PercentTemplate(string.Template):
     delimiter='%'
@@ -113,14 +107,8 @@ class ArticleRange(list):
                 continue
 
     def to_string(self):
-#PYTHON2.5 MIGRATION
-        if len(self) == 0:
-            return ""
-        else:
-            return (','.join(['-'.join([str(n) for n in rng]) for rng in self]))
-#        return (','.join(['-'.join([str(n) for n in rng]) for rng in self]))
-#                if len(self) > 0 else '')
-# END MIGRATION
+        return (','.join(['-'.join([str(n) for n in rng]) for rng in self]))
+                if len(self) > 0 else '')
 
     def how_many(self):
         return sum([r[-1] - r[0] + 1 for r in self])
@@ -236,27 +224,17 @@ class FlrnConfig:
     def make_reply(self, original):
         # En-têtes de la réponse
         reply = nntp_io.Article()
-#PYTHON2.5 MIGRATION
-        if 'Followup-To' in original.headers:
-            reply.headers["Newsgroups"] = original.headers['Followup-To']
-        else:
-            reply.headers["Newsgroups"] = original.headers['Newsgroups']
-        if 'References' in original.headers:
-            reply.headers["References"] = original.headers['References'] + ' ' \
-                                          + original.headers['Message-ID']
-        else:
-            reply.headers['References'] = original.headers['Message-ID']
-        if reply_regexp.match(original.headers['Subject']):
-            reply.headers['Subject'] = original.headers['Subject']
-        else:
-            reply.headers["Subject"] = u'Re: ' + original.headers["Subject"]
-#        reply.headers["Newsgroups"] = (original.headers['Followup-To'] if 'Followup-To' in original.headers
-#                                       else original.headers['Newsgroups'])
-#        reply.headers["References"] = ((original.headers['References'] + ' ')
-#            if 'References' in original.headers else "") + original.headers['Message-ID']
-#        reply.headers["Subject"] = (u'Re: ' if reply_regexp.match(original.headers['Subject']) else "") \
-#                                   + original.headers["Subject"]
-# END MIGRATION
+        reply.headers["Newsgroups"] = (
+            original.headers['Followup-To'] 
+            if 'Followup-To' in original.headers
+            else original.headers['Newsgroups'])
+        reply.headers["References"] = ((
+            (original.headers['References'] + ' ')
+            if 'References' in original.headers else "")
+            + original.headers['Message-ID'])
+        reply.headers["Subject"] = (
+            u'Re: ' if reply_regexp.match(original.headers['Subject'])
+            else "") + original.headers["Subject"]
         reply.headers['From'] = self.from_header
 
         # Ligne d'attribution
@@ -267,13 +245,7 @@ class FlrnConfig:
         for a in group_parts[:-1]: group_abbr += a[0] + "."
         group_abbr += group_parts[-1]
 
-#PYTHON2.5 MIGRATION
-        if author[0]:
-            author = author[0]
-        else:
-            author = author[1]
-#       author = author[0] if author[0] else author[1]
-# END MIGRATION
+        author = author[0] if author[0] else author[1]
 
         if not(self.params['include_in_edit']):
             reply.body = ""
@@ -291,12 +263,10 @@ class FlrnConfig:
             lines = original.body.split('\n')
             short_prefix = prefix.rstrip()
             for i in range(len(lines)):
-                if lines[i].startswith('>'):
-                    body = body + short_prefix + lines[i] + '\n'
-                else:
-                    body = body + prefix + lines[i] + '\n'
+                body += short_prefix if lines[i].startswith('>') else prefix
+                body += lines[i] + '\n'
         else:
-            body = body + prefix + original.body.replace('\n', '\n' + prefix)
+            body += prefix + original.body.replace('\n', '\n' + prefix)
 
         reply.body = body
         return reply
@@ -306,19 +276,20 @@ class FlrnConfig:
         et deux ensembles de groupes abonnés et non-abonnés"""
         # Lecture du newsrc
         newsrc_path = self.config_dir + "/.flnewsrc" + self.params['flnews_ext']
-        try:
-            source = open(newsrc_path, 'r')
-        except IOError:
-            try:
-                source = open(newsrc_path, 'w')
-                source.close()
-                self.subscribed = set([])
-                self.unsubscribed = set([])
-                self.groups = {}
-                self.refresh_groups()
-                return None
-            except IOError:
-                return None
+        source = open(newsrc_path, 'r')
+#        try:
+#            source = open(newsrc_path, 'r')
+#        except IOError:
+#            try:
+#                source = open(newsrc_path, 'w')
+#                source.close()
+#                self.subscribed = set([])
+#                self.unsubscribed = set([])
+#                self.groups = {}
+#                self.refresh_groups()
+#                return None
+#            except IOError:
+#                return None
         newsrc = source.readlines()
         source.close()
         

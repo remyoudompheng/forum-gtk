@@ -72,7 +72,7 @@ class SummaryBuffer:
                         art_no = int(xref.split(':')[1])
                         if art_no < lowest: lowest = art_no
                         break
-                if not(Sorti):
+                if not(sorti):
                     ids.add(ref_id)
                     xover[0:0] = self.parent.conf.server.overview(
                         group, art_no, art_no)[0]

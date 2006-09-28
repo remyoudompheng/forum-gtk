@@ -60,16 +60,10 @@ def main():
     if ('-c' in optlist) or ('--co' in optlist):
         conf_source.update_unreads()
         for g in conf_source.unreads:
-            if conf_source.unreads[g] == 1:
-                print '  ' + g + ':', '1 article non lu.'
-            if conf_source.unreads[g] > 1:
-                print '  ' + g + ':', \
-                      conf_source.unreads[g], 'articles non lus.'
-#PYTHON2.5 MIGRATION
-#            if conf_source.unreads[g] > 0:
-#                print '  ' + g + ':',  conf_source.unreads[g], \
-#                      ('article non lu.' if conf_source.unreads[g] == 1
-#                       else 'articles non lus.')
+            if conf_source.unreads[g] > 0:
+                print '  ' + g + ':',  conf_source.unreads[g], \
+                      ('article non lu.' if conf_source.unreads[g] == 1
+                       else 'articles non lus.')
             unreads += conf_source.unreads[g]
         if unreads == 0:
             print 'Rien de nouveau.'
@@ -87,13 +81,7 @@ def main():
         sys.exit(0)
 
     # Chargement de l'interface avec OpenGL ou pas
-    if '--opengl' in optlist:
-        import gtkgl_gui as gui_module
-    else:
-        import gtk_gui as gui_module
-                            
-#PYTHON2.5 MIGRATION
-#    import (gtkgl_gui if '--opengl' in optlist else gtk_gui) as gui_module
+    import (gtkgl_gui if '--opengl' in optlist else gtk_gui) as gui_module
     gui = gui_module.MainWindow(conf_source)
         
     import gtk

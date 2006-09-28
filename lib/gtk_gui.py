@@ -1,8 +1,7 @@
-#! /usr/bin/env python2.4
 # -*- coding: utf-8 -*-
 
 # Flrn-gtk: fenêtre principale
-# Rémy Oudompheng, Noël 2005
+# Rémy Oudompheng, 2005-2006
 
 # Modules GTK
 import pygtk
