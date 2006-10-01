@@ -237,8 +237,8 @@ class FlrnConfig:
             if 'References' in original.headers else "")
             + original.headers['Message-ID'])
         reply.headers["Subject"] = (
-            u'Re: ' if reply_regexp.match(original.headers['Subject'])
-            else "") + original.headers["Subject"]
+            u'' if reply_regexp.match(original.headers['Subject'])
+            else u"Re: ") + original.headers["Subject"]
         reply.headers['From'] = self.from_header
 
         # Ligne d'attribution
