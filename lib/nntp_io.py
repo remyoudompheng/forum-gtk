@@ -342,7 +342,6 @@ class Article:
         encodings = [a.strip('\'"') for a in 
                      config.params['post_charsets'].split()]
         encodings[0:0] = ['us-ascii']
-        encodings[0:0] = ['us-ascii']
         encodings.append('utf-8')
 
         try:
