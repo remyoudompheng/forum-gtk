@@ -300,7 +300,6 @@ class FlrnConfig:
         # Lecture des données
         self.subscribed = set([])
         self.unsubscribed = set([])
-        self.groups = {}
         for l in newsrc:
             t = newsrc_regexp.match(l)
             if t:
@@ -312,6 +311,7 @@ class FlrnConfig:
                     self.groups[t.group(1)] = ArticleRange(t.group(3))                    
                 except ValueError:
                     self.groups[t.group(1)] = ArticleRange("")
+        self.update_groupsize()
 
         # On évite les grotesquitudes
         self.unsubscribed -= self.subscribed
@@ -356,12 +356,12 @@ class FlrnConfig:
             if g in self.unsubscribed:
                 f.write(g + '! ' + self.groups[g].to_string() + '\n')
 
-        for g in self.subscribed:
+        for g, rng in self.groups.iteritems():
             if g not in order:
-                f.write(g + ': ' + self.groups[g].to_string() + '\n')
-        for g in self.unsubscribed:
-            if g not in order:
-                f.write(g + '! ' + self.groups[g].to_string() + '\n')
+                if g in self.subscribed:
+                    f.write(g + ': ' + self.groups[g].to_string() + '\n')
+                if g in self.unsubscribed:
+                    f.write(g + '! ' + self.groups[g].to_string() + '\n')
         f.close()
         
     def refresh_groups(self):
@@ -374,18 +374,18 @@ class FlrnConfig:
                 else:
                     self.unsubscribed.add(i)
 
-    def update_unreads(self):
-        """Renvoie le nombre de messages non lus pour les groupes
-        abonnés (il faudrait pas non plus complètement bourriner
-        les serveurs de News)"""
-        del self.unreads
-        self.unreads = {}
-        for g in self.subscribed:
+    def update_groupsize(self):
+        """Renvoie le nombre de messages des groupes"""
+        for g, read in self.groups.iteritems():
             ends = self.server.group_stats(g)
-            read = self.groups[g]
             read.trim(ends)
-            # On compte le total moins les articles lus
-            self.unreads[g] = ends[1] - ends[0] + 1 - read.how_many()
+            self.groupsize[g] = ends[1] - ends[0] + 1
+
+    def update_unreads(self):
+        """Met à jour le nombre de non lus"""
+        for g, read in self.groups.iteritems():
+            self.unreads[g] = self.groupsize[g] - read.how_many()
+            if g in self.unsubscribed: del self.unreads[g]
             
     def eval_string(self, s):
         if s.startswith("'") and s.startswith("'"):
@@ -412,6 +412,8 @@ class FlrnConfig:
         self.params = {}
         self.my_hdrs = {}
         self.unreads = {}
+        self.groups = {}
+        self.groupsize = {}
         # Trucs utiles
         self.wwwbrowser = "dillo"
         # Paramètres par défaut

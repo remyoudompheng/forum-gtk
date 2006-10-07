@@ -75,7 +75,7 @@ class SkelMainWindow:
         dialog.vbox.pack_start(gtk.Label("Choisissez un groupe"),
                                False, False, 5)
         group_widget = gui_modules.GroupBuffer(self, dialog.vbox.pack_start)
-        group_widget.refresh_tree(True)
+        group_widget.display_tree(True)
         dialog.vbox.show_all()
         dialog.set_default_size(400, 500)
 
@@ -117,7 +117,7 @@ class SkelMainWindow:
             u"Cochez les groupes que vous souhaitez lire"), False, False, 5)
         # Un arbre avec des cases à cocher
         group_widget = grp_buffer.GroupBuffer(self, dialog.vbox.pack_start, True)
-        group_widget.refresh_tree(True)
+        group_widget.display_tree(True)
 
         dialog.vbox.show_all()
         dialog.set_default_size(400, 550)
@@ -147,13 +147,15 @@ class SkelMainWindow:
                     self.conf.unsubscribed.add(g)
                     self.conf.subscribed.remove(g)
             # Mise à jour de l'affichage
+            self.conf.update_groupsize()
             self.conf.update_unreads()
-            self.group_tab.refresh_tree(False)
+            self.group_tab.display_tree(False)
         dialog.destroy()
 
     def action_syncgroups_callback(self, action):
         self.conf.refresh_groups()
-        self.group_tab.refresh_tree(False)
+        self.conf.update_groupsize()
+        self.group_tab.display_tree(False)
 
     # Menu Sommaire
     def action_sumgoto_callback(self, action):
@@ -263,7 +265,7 @@ class SkelMainWindow:
                         self.group_tab.widget.get_selection().select_path(path)
                         return
                 # Rien du tout, on met à jour le Group Buffer et les unreads
-                self.conf.update_unreads()
+                self.conf.update_groupsize()
                 self.group_tab.refresh_tree()
                 return
 

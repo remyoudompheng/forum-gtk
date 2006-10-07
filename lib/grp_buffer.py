@@ -31,32 +31,32 @@ class GroupBuffer:
             comps[i] = comps[i][:1]
         return prefix + '.'.join(comps)
 
-    def display_tree(self, list):
+    def format_node(self, item, depth):
+        "Formate tout bien item = (name, data)"
+        # Selon qu'on est dans la liste des groupes, ou pas
+        caption = (item[1]['arts'] + ':') if item[1]['arts'] else ''
+        font = 'monospace' + (
+            '' if not item[1]['arts'] else (
+            ' bold' if int(item[1]['arts']) > 0 else ' italic'))
+        
+        # Le reste
+        if self.parent.conf.params['abbr_group_names']:
+            caption += ".".join([s[:1] for s in item[0][:depth - 1]])
+        else:
+            caption += ".".join(item[0][:depth - 1])
+        caption += ("." if depth > 1 else "") + \
+                   ".".join(item[0][depth - 1:])
+        
+        return [item[1]['name'], caption, item[1]['subd'], True, font]
+
+    def display_tree(self, all_groups=False):
         """construit un arbre directement à partir de la liste (nom, data)"""
-        def format_node(item, depth):
-            "Formate tout bien"
-            # Selon qu'on est dans la liste des groupes, ou pas
-            caption = (item[1]['arts'] + ':') if item[1]['arts'] else ''
-            font = 'monospace' + (
-                '' if not item[1]['arts'] else (
-                ' bold' if int(item[1]['arts']) > 0 else ' italic'))
-
-            # Le reste
-            if self.parent.conf.params['abbr_group_names']:
-                caption += ".".join([s[:1] for s in item[0][:depth - 1]])
-            else:
-                caption += ".".join(item[0][:depth - 1])
-            caption += ("." if depth > 1 else "") + \
-                       ".".join(item[0][depth - 1:])
-
-            return [item[1]['name'], caption, item[1]['subd'], True, font]
-
         def grow_tree(root, list, depth):
             """Construit une branche à partir d'une racine root, d'une
             liste de groupes list à une profondeur depth"""
             if len(list) == 1:
                 self.group2node[list[0][1]['name']] = self.data.append(
-                    root, format_node(list[0], depth))
+                    root, self.format_node(list[0], depth))
                 return
             subtrees = {}
             ordered_subtrees = []
@@ -75,7 +75,7 @@ class GroupBuffer:
                 subtrees[l[0][depth]].append(l)
             if node:
                 # Il y a un vrai groupe, on le met
-                newroot = self.data.append(root, format_node(node, depth))
+                newroot = self.data.append(root, self.format_node(node, depth))
                 self.group2node[node[1]['name']] = newroot
             elif (len(subtrees) > 1) and (depth > 0):
                 # Il y a différentes branches, on crée un noeud bouche-trou
@@ -85,45 +85,61 @@ class GroupBuffer:
             for b in ordered_subtrees:
                 grow_tree(newroot, subtrees[b], depth + 1)
 
+
+        self.parent.conf.update_unreads()
+        digits = 0
+        if not(all_groups):
+            arts = self.parent.conf.unreads
+            digits = (len(str(max(arts.values())))
+                      if len(arts) else 0)
+            data = [[g.replace(
+                self.parent.conf.params['prefixe_groupe'],"", 1).split('.'), 
+                  {'name': g,
+                   'subd': True,
+                   'arts': str(arts[g]).rjust(digits)}]
+                 for g in sorted(self.parent.conf.subscribed)]
+        else:
+            data = [[g.replace(
+                self.parent.conf.params['prefixe_groupe'],"", 1).split('.'), 
+                  {'name': g,
+                   'subd': g in self.parent.conf.subscribed,
+                   'arts': None}]
+                 for g in sorted(self.parent.conf.groups)]
+
         self.data.clear()
         try:
             del self.group2node
             self.group2node = {}
         except AttributeError:
             self.group2node = {}
-        if len(list):
-            grow_tree(None, list, 0)
+        if len(data):
+            grow_tree(None, data, 0)
         self.widget.set_model(self.data)
         self.widget.expand_all()
 
-    def refresh_tree(self, all_groups = False):
-        digits = 0
-        if not(all_groups):
-            arts = self.parent.conf.unreads
-            digits = (len(str(max(arts.values())))
-                      if len(arts) else 0)
-            self.display_tree(
-                [[g.replace(
-                self.parent.conf.params['prefixe_groupe'],"", 1).split('.'), 
-                  {'name': g,
-                   'subd': True,
-                   'arts': str(arts[g]).rjust(digits)}]
-                 for g in sorted(self.parent.conf.subscribed)])
-            return arts
-        else:
-            self.display_tree(
-                [[g.replace(
-                self.parent.conf.params['prefixe_groupe'],"", 1).split('.'), 
-                  {'name': g,
-                   'subd': g in self.parent.conf.subscribed,
-                   'arts': None}]
-                 for g in sorted(self.parent.conf.groups)])
+    def refresh_tree(self):
+        self.parent.conf.update_unreads()
+        for g, n in self.parent.conf.unreads.iteritems():
+            try:
+                item = self.group2node[g]
+            except KeyError:
+                continue
+            depth = len(self.data.get_path(item))
+            data = [g.replace(
+                self.parent.conf.params['prefixe_groupe'],"", 1).split('.'),
+                    {'name': g,
+                     'subd': self.data.get_value(item, GRP_COLUMN_SUBSCRIBED),
+                     'arts': str(n)}]
+            new_data = self.format_node(data, depth)
+            for j in xrange(5):
+                self.data.set_value(item, j, new_data[j])
 
     def toggle_callback(self, widget, path, data=None):
         """Cochage de case"""
+        item = self.data.get_iter(path)
         self.data.set_value(
-            self.data.get_iter(path), 2,
-            not(self.data.get_value(self.data.get_iter(path), 2)))
+            item, GRP_COLUMN_SUBSCRIBED,
+            not(self.data.get_value(item, GRP_COLUMN_SUBSCRIBED)))
         
     def click_callback(self, widget, event):
         if (event.type == gtk.gdk.BUTTON_PRESS) and event.button == 3:
@@ -133,7 +149,8 @@ class GroupBuffer:
             row = self.data[position[0]]
             # On vérifie que c'est un vrai groupe
             if self.data.get_value(row.iter, GRP_COLUMN_ISREAL):
-                self.popped_group = self.data.get_value(row.iter, GRP_COLUMN_NAME)
+                self.popped_group = self.data.get_value(
+                    row.iter, GRP_COLUMN_NAME)
                 self.popup_menushow(True, event)
                 return True
         return False
@@ -159,7 +176,7 @@ class GroupBuffer:
     def popup_unsubscribe(self, action):
         self.parent.conf.subscribed.remove(self.popped_group)
         self.parent.conf.unsubscribed.add(self.popped_group)
-        self.refresh_tree(False)
+        self.display_tree(False)
         return True
 
     def popup_gotoart(self, action):
@@ -172,86 +189,62 @@ class GroupBuffer:
         self.parent.action_overview_callback(None)
         return True
 
+    def msgbox_getrange(self, vals, title, label):
+        """Crée une boîte de dialogue pour récupérer un intervalle"""
+        dialog = gtk.Dialog(title, self.parent.window, gtk.DIALOG_MODAL,
+                            (gtk.STOCK_OK, gtk.RESPONSE_OK))
+        step = int((vals[1] - vals[0]) / 5000) * 100 + 100
+        start_entry = gtk.SpinButton(
+            gtk.Adjustment(vals[0], vals[0], vals[1], 1, step))
+        end_entry = gtk.SpinButton(
+            gtk.Adjustment(vals[1], vals[0], vals[1], 1, step))
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(label + " "), False, False, 0)
+        hbox.pack_start(start_entry, True, True, 0)
+        hbox.pack_start(gtk.Label(u" à "), False, False, 0)
+        hbox.pack_start(end_entry, True, True, 0)
+        
+        dialog.vbox.pack_start(
+            gtk.Label(u"Groupe : " + self.popped_group),
+            False, False, 0)
+        dialog.vbox.pack_start(hbox, True, True, 0)
+        dialog.vbox.show_all()
+            
+        # Récupération de la réponse
+        tagged_range = [1, 1]
+        def get_user_entry(widget, resp_id, data):
+            if resp_id == gtk.RESPONSE_OK:
+                data[0] = start_entry.get_value_as_int()
+                data[1] = end_entry.get_value_as_int()
+                return None
+        dialog.connect("response", get_user_entry, tagged_range)
+
+        if dialog.run() == gtk.RESPONSE_OK:        
+            return tagged_range
+        else:
+            return None
+        dialog.destroy()
+
     def popup_killarts(self, action):
         read_list = self.parent.conf.groups[self.popped_group]
         vals = self.parent.conf.server.group_stats(self.popped_group)
         if vals:
-            # Préparation de la boîte de dialogue
-            dialog = gtk.Dialog(u"Voir le sommaire du groupe",
-                                self.parent.window, gtk.DIALOG_MODAL,
-                                (gtk.STOCK_OK, gtk.RESPONSE_OK))
-            step = int((vals[1] - vals[0]) / 5000) * 100 + 100
-            start_entry = gtk.SpinButton(
-                gtk.Adjustment(vals[0], vals[0], vals[1], 1, step))
-            end_entry = gtk.SpinButton(
-                gtk.Adjustment(vals[1], vals[0], vals[1], 1, step))
-            hbox = gtk.HBox()
-            hbox.pack_start(gtk.Label(u"Marquer comme lus les numéros "),
-                            False, False, 0)
-            hbox.pack_start(start_entry, True, True, 0)
-            hbox.pack_start(gtk.Label(u" à "), False, False, 0)
-            hbox.pack_start(end_entry, True, True, 0)
-            
-            dialog.vbox.pack_start(
-                gtk.Label(u"Groupe : " + self.popped_group),
-                False, False, 0)
-            dialog.vbox.pack_start(hbox, True, True, 0)
-            dialog.vbox.show_all()
-            
-            # Récupération de la réponse
-            tagged_range = [1, 1]
-            def get_user_entry(widget, resp_id, data):
-                if resp_id == gtk.RESPONSE_OK:
-                    data[0] = start_entry.get_value_as_int()
-                    data[1] = end_entry.get_value_as_int()
-                    return None
-            dialog.connect("response", get_user_entry, tagged_range)
-                
-            if dialog.run() == gtk.RESPONSE_OK:
+            tagged_range = self.msgbox_getrange(
+                u"Marquer comme lus", u"Marquer comme lus les numéros")
+            if len(tagged_range) == 2:
                 read_list.add_range(tagged_range)
-            dialog.destroy()
-            self.refresh_tree()
+                self.refresh_tree()
 
     def popup_unkillarts(self, action):
         read_list = self.parent.conf.groups[self.popped_group]
         vals = self.parent.conf.server.group_stats(self.popped_group)
         if vals:
-            # Préparation de la boîte de dialogue
-            dialog = gtk.Dialog(u"Voir le sommaire du groupe",
-                                self.parent.window, gtk.DIALOG_MODAL,
-                                (gtk.STOCK_OK, gtk.RESPONSE_OK))
-            step = int((vals[1] - vals[0]) / 5000) * 100 + 100
-            start_entry = gtk.SpinButton(
-                gtk.Adjustment(vals[0], vals[0], vals[1], 1, step))
-            end_entry = gtk.SpinButton(
-                gtk.Adjustment(vals[1], vals[0], vals[1], 1, step))
-            hbox = gtk.HBox()
-            hbox.pack_start(gtk.Label(u"Marquer comme non lus les numéros "),
-                            False, False, 0)
-            hbox.pack_start(start_entry, True, True, 0)
-            hbox.pack_start(gtk.Label(u" à "), False, False, 0)
-            hbox.pack_start(end_entry, True, True, 0)
-            
-            dialog.vbox.pack_start(
-                gtk.Label(u"Groupe : " + self.popped_group),
-                False, False, 0)
-            dialog.vbox.pack_start(hbox, True, True, 0)
-            dialog.vbox.show_all()
-            
-            # Récupération de la réponse
-            tagged_range = [1, 1]
-            def get_user_entry(widget, resp_id, data):
-                if resp_id == gtk.RESPONSE_OK:
-                    data[0] = start_entry.get_value_as_int()
-                    data[1] = end_entry.get_value_as_int()
-                    return None
-            dialog.connect("response", get_user_entry, tagged_range)
-                
-            if dialog.run() == gtk.RESPONSE_OK:
+            tagged_range = self.msgbox_getrange(
+                u"Marquer comme non lus", u"Marquer comme non lus les numéros")
+            if len(tagged_range) == 2:
                 read_list.del_range(tagged_range)
-            dialog.destroy()
-            self.refresh_tree()
-
+                self.refresh_tree()
+ 
     def __init__(self, parent, pack_function, show_subscriptions = False):
         self.parent = parent
         self.subcriptions = show_subscriptions

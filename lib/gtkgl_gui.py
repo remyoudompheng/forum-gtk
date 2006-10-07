@@ -69,4 +69,4 @@ class MainWindow (main_window.SkelMainWindow):
 
         # Initialisation des affichages
         self.conf.update_unreads()
-        self.group_tab.refresh_tree(False)
+        self.group_tab.display_tree(False)

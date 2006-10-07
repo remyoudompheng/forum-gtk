@@ -164,16 +164,6 @@ class SummaryBuffer:
                             self.parent.conf.register_unread(
                                 self.parent.current_group, number)
 
-            # Mise à jour des lus
-            caption = self.parent.group_tab.data.get_value(
-                self.parent.group_tab.group2node[self.parent.current_group],
-                GRP_COLUMN_CAPTION).split(":")
-            self.parent.group_tab.data.set_value(
-                self.parent.group_tab.group2node[self.parent.current_group],
-                GRP_COLUMN_CAPTION,
-                str(self.parent.conf.unreads[self.parent.current_group])
-                + ':' + caption[1])
-            
             # Auteur ?
             real_name, addr = email.Utils.parseaddr(
                 nntp_io.translate_header(i[2]))
@@ -200,6 +190,7 @@ class SummaryBuffer:
         self.widget.expand_all()
         
         # Informations
+        self.parent.group_tab.refresh_tree()
         self.parent.status_bar.pop(0)
         self.parent.status_bar.push(0, "Groupe " + self.parent.current_group)
 
@@ -227,17 +218,13 @@ class SummaryBuffer:
         if not(art_iter): return False
         msgid = model.get_value(art_iter, 0)
         # Était-il lu ?
-        if not(model.get_value(art_iter, 5)):
-            model.set_value(art_iter, 5, True)
+        if not(model.get_value(art_iter, SUM_COLUMN_READ)):
+            model.set_value(art_iter, SUM_COLUMN_READ, True)
             # Mise à jour de la liste de lus
-            self.parent.conf.register_read(self.parent.current_group,
-                                           model.get_value(art_iter, 1))
-            caption = self.parent.group_tab.data.get_value(
-                self.parent.group_tab.group2node[self.parent.current_group],
-                GRP_COLUMN_CAPTION).split(":")
-            self.parent.group_tab.data.set_value(
-                self.parent.group_tab.group2node[self.parent.current_group],
-                GRP_COLUMN_CAPTION, str(int(caption[0]) - 1) + ':' + caption[1])
+            self.parent.conf.register_read(
+                self.parent.current_group, model.get_value(art_iter, 1))
+            self.parent.group_tab.refresh_tree()
+
         self.current_node = art_iter
         self.parent.article_tab.display_msgid(msgid)
         # On recentre le cadre
@@ -279,6 +266,7 @@ class SummaryBuffer:
             self.parent.conf.register_unread(
                 self.parent.current_group,
                 self.data.get_value(iter, SUM_COLUMN_NUM))
+        self.parent.group_tab.refresh_tree()
 
     def read_toggle_callback(self, widget, path, data=None):
         """Callback pour changer l'état"""
