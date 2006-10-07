@@ -6,12 +6,6 @@
 
 import getopt, os, sys, locale
 
-# Profileur et debug
-# import hotshot, pdb
-# prof = hotshot.Profile(os.path.expanduser("~/src/forum-gtk/forum-gtk.prof"))
-# prof.start()
-
-
 HELP_STRING = u"""Syntaxe: program [-ch] [-d dir] [-n name] [--opengl]
 Options:
  -d, --debug        active les messages d'information sur stderr
@@ -20,7 +14,6 @@ Options:
  -f, --conf-dir     indique le dossier contenant les fichiers de configuration
  -n, --optname name indique le groupe d'options à utiliser
  --opengl           utiliser l'arbre 3D"""
-    
 
 def main():
     # Récupération des options de la ligne de commande
@@ -92,5 +85,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
-# prof.close()

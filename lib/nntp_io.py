@@ -351,7 +351,7 @@ class Article:
                 encodings[0:0] = [found.group(1).strip('"')]
         except KeyError:
             pass
-        
+
         encoding = None
         for enc in encodings:
             try:
