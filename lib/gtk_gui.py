@@ -24,16 +24,8 @@ class MainWindow (main_window.SkelMainWindow):
             name = dialog.get_filename()
         else: return
         dialog.destroy()
-
-        width, height = self.tree_tab.pictsize
+        self.tree_tab.surface.write_to_png(name)
         
-        pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, 
-                                False, 8, width, height) 
-        pixbuf.get_from_drawable(self.tree_tab.pixmap, 
-                                 self.tree_tab.pixmap.get_colormap(), 
-                                 0, 0, 0, 0, width, height)
-        pixbuf.save(name, "png")
-
     def __init__(self, conf_source):
         self.init_common(conf_source)
 

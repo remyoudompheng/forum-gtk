@@ -229,7 +229,7 @@ class GroupBuffer:
         read_list = self.parent.conf.groups[self.popped_group]
         vals = self.parent.conf.server.group_stats(self.popped_group)
         if vals:
-            tagged_range = self.msgbox_getrange(
+            tagged_range = self.msgbox_getrange(vals,
                 u"Marquer comme lus", u"Marquer comme lus les numéros")
             if len(tagged_range) == 2:
                 read_list.add_range(tagged_range)
@@ -239,7 +239,7 @@ class GroupBuffer:
         read_list = self.parent.conf.groups[self.popped_group]
         vals = self.parent.conf.server.group_stats(self.popped_group)
         if vals:
-            tagged_range = self.msgbox_getrange(
+            tagged_range = self.msgbox_getrange(vals,
                 u"Marquer comme non lus", u"Marquer comme non lus les numéros")
             if len(tagged_range) == 2:
                 read_list.del_range(tagged_range)

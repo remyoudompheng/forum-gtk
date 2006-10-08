@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 
 # Profileur et debug
-import hotshot.stats, pdb, main
-prof = hotshot.stats.Profile()
-prof.runcall(main.main)
-prof.create_stats()
-prof.print_stats(sort="cumulative")
-
+import cProfile, os, pdb, main
+cProfile.run("main.main()",
+        os.path.expanduser("~/tmp/forum-gtk.%s.prof" % os.getpid()))

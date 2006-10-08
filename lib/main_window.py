@@ -289,14 +289,14 @@ class SkelMainWindow:
         if read:
             dialog = gtk.MessageDialog(
                 self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION,
-                gtk.BUTTONS_YES_NO, u'Attention : êtes-vous sûr(e) de vouloir' +
-                u" marquer comme lus TOUS les messages ayant un ancêtre commun" +
+                gtk.BUTTONS_YES_NO, u'Attention : êtes-vous sûr(e) de vouloir'
+                u" marquer comme lus TOUS les messages ayant un ancêtre commun"
                 u" avec le message sélectionné ?")
         else:
             dialog = gtk.MessageDialog(
                 self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION,
-                gtk.BUTTONS_YES_NO, u'Attention : êtes-vous sûr(e) de vouloir' +
-                u" marquer comme non lus TOUS les messages ayant un ancêtre" +
+                gtk.BUTTONS_YES_NO, u'Attention : êtes-vous sûr(e) de vouloir'
+                u" marquer comme non lus TOUS les messages ayant un ancêtre"
                 u" commun avec le message sélectionné ?")
         if dialog.run() == gtk.RESPONSE_YES:
             # On cherche un message-cible

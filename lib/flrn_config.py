@@ -115,7 +115,7 @@ class ArticleRange(list):
         ) if len(self) > 0 else ''
 
     def how_many(self):
-        return sum([r[-1] - r[0] + 1 for r in self])
+        return sum([r[-1] - r[0] for r in self]) + len(self)
 
     def owns(self, number):
         for i in self:

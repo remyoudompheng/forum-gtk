@@ -64,14 +64,14 @@ def main():
             print 'Il y a au total 1 article non lu.'
         else:
             print 'Il y a au total', unreads, 'articles non lus.'
-        sys.exit(0)
+        return 0
 
     # Est-ce l'heure ?
     if not(flrn_config.is_geek_time(
             conf_source.params['geek_start_time'],
             conf_source.params['geek_end_time'])):
         print "C'est pas l'heure de lire forum !"
-        sys.exit(0)
+        return 0
 
     # Chargement de l'interface avec OpenGL ou pas
     if '--opengl' in optlist:
