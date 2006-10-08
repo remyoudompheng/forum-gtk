@@ -219,11 +219,12 @@ class GroupBuffer:
                 return None
         dialog.connect("response", get_user_entry, tagged_range)
 
-        if dialog.run() == gtk.RESPONSE_OK:        
+        if dialog.run() == gtk.RESPONSE_OK:
+            dialog.destroy()
             return tagged_range
         else:
+            dialog.destroy()
             return None
-        dialog.destroy()
 
     def popup_killarts(self, action):
         read_list = self.parent.conf.groups[self.popped_group]

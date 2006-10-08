@@ -1,7 +1,19 @@
 #!/usr/bin/env python2.5
 # -*- coding: utf-8 -*-
 
-# Profileur et debug
-import cProfile, os, pdb, main
-cProfile.run("main.main()",
-        os.path.expanduser("~/tmp/forum-gtk.%s.prof" % os.getpid()))
+import cProfile, pstats, pstatscalltree
+import main, os, pdb
+
+home = os.getenv("HOME")
+
+bidule = cProfile.Profile()
+bidule.run("main.main()")
+
+# Sortie KCacheGrind
+merger = pstats.Stats(home + "/tmp/forum-gtk.prof", bidule)
+merger.dump_stats(home + "/tmp/forum-gtk.prof")
+
+analyser = pstatscalltree.KCacheGrind(merger)
+file = open(home + "/tmp/forum-gtk.kprof", "w+")
+analyser.output(file)
+file.close()
