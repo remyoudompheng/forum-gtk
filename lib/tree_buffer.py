@@ -179,7 +179,7 @@ class TreeBuffer:
         # Initialisation de Cairo
         del self.surface
         self.surface = cairo.ImageSurface(
-            cairo.FORMAT_RGB24, self.width, self.height)
+            cairo.FORMAT_RGB24, int(self.width), int(self.height))
         del self.cairo
         self.cairo = cairo.Context(self.surface)
         # Fond

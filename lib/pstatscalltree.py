@@ -13,20 +13,22 @@
 
 class KCacheGrind(object):
     def __init__(self, pstats_item):
-        self.data = pstats_item.stats
+        pstats_item.calc_callees()
+        self.revdata = pstats_item.stats
+        self.data = pstats_item.all_callees
         self.out_file = None
 
     def output(self, out_file):
         self.out_file = out_file
         print >> out_file, 'events: Ticks'
         self._print_summary()
-        for func, stat in self.data.iteritems:
+        for func, stat in self.revdata.iteritems():
             self._entry(func, stat)
 
     def _print_summary(self):
         max_cost = 0
-        for entry in self.data:
-            totaltime = int(entry[3] * 1000)
+        for entry in self.revdata.itervalues():
+            totaltime = int(entry[2] * 1000)
             max_cost = max(max_cost, totaltime)
         print >> self.out_file, 'summary: %d' % (max_cost,)
 
@@ -37,8 +39,8 @@ class KCacheGrind(object):
         print >> out_file, 'fn=%s %s:%d' % (func[2], func[0], func[1])
         print >> out_file, '%d %d' % (func[1], inlinetime)
         # recursive calls are counted in entry.calls
-        if stat[4]:
-            calls = stat[4]
+        if self.data[func]:
+            calls = self.data[func]
         else:
             calls = {}
         
@@ -50,7 +52,7 @@ class KCacheGrind(object):
     def _subentry(self, lineno, subfunc, subdata):
         out_file = self.out_file
         totaltime = int(subdata[2] * 1000)
-        print >> out_file, 'cfn=%s' % (label(subfunc),)
+        print >> out_file, 'cfn=%s %s:%d' % (subfunc[2],subfunc[0],subfunc[1])
         print >> out_file, 'cfi=%s' % (subfunc[0])
         print >> out_file, 'calls=%d %d' % (subdata[0], subfunc[1])
         print >> out_file, '%d %d' % (lineno, totaltime)
