@@ -1,0 +1,24 @@
+Version 0.8 (07 Oct 2006)
+ * Factorised article ranges processing
+ * Smarter updating of unread count in Group Tree.
+ * Switch to Python 2.5 and Cairo rendering of thread tree
+
+Version 0.7 (08 Aug 2006)
+ * Changes to unread counting method to avoid spamming servers with
+   requests
+ * new 3D tree visualiser using PyVisual
+ * several bug fixes
+
+Version 0.6 (07 May 2006)
+ * Handle NNTP server errors
+ * Commands to mark article ranges as (un)read
+ * rot13 filter
+ * improvement to automatic resizing of panels
+
+Version 0.5 (31 Jan 2006)
+ * Highlighting of headers, quotes and signatures
+ * Graphical tree-like picture of threads
+ * Line wrapping in Article Editor
+
+Version 0.1 (30 Dec 2005)
+ * First version with ability to read and post
