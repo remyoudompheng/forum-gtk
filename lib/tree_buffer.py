@@ -153,7 +153,7 @@ class TreeBuffer:
                 self.cairo.rel_line_to(XWIDTH/2, XWIDTH/2)
                 self.cairo.rel_line_to(XWIDTH/2, -XWIDTH/2)
                 self.cairo.close_path()
-                self.cairo.set_source_rgb(0.5, 0.5, 0.5)
+                self.cairo.set_source_rgb(1., 1., 1.)
                 self.cairo.fill_preserve()
                 self.cairo.set_source_rgb(1., 0., 0.)
                 self.cairo.stroke()

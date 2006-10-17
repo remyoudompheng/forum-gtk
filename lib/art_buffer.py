@@ -58,15 +58,18 @@ class ArticleBuffer:
                 father = self.parent.conf.server.get_article_by_msgid(
                     article.headers['References'].split()[-1])
                 if father:
-                    textbuf.insert_with_tags_by_name(iter, u'Réponse à: ', "head_name")
-                    textbuf.insert_with_tags_by_name(iter, self.desusurpation(father) + '\n', "head_content")
+                    textbuf.insert_with_tags_by_name(
+                        iter, u'Réponse à: ', "head_name")
+                    textbuf.insert_with_tags_by_name(
+                        iter, self.desusurpation(father) + '\n', "head_content")
             return
         if header not in article.headers:
             return
         if header == 'From':
             # Pour le From, on précise le Sender si nécessaire
             textbuf.insert_with_tags_by_name(iter, 'From: ', "head_name")
-            textbuf.insert_with_tags_by_name(iter, self.desusurpation(article) + '\n', "head_content")
+            textbuf.insert_with_tags_by_name(
+                iter, self.desusurpation(article) + '\n', "head_content")
         elif header == 'References':
             # Pour les références, on met des liens cliquables vers les Msg-IDs
             textbuf.insert_with_tags_by_name(iter, 'References: ', "head_name")
@@ -161,7 +164,17 @@ class ArticleBuffer:
                                                    k, article, pos)
                         continue
                     self.insert_header(self.buffer_head, h, article, pos)
-                        
+
+            # La photo annuaire
+            login = article.headers['Sender'].strip().split('@')[0]
+            try:
+                self.face_head.set_from_pixbuf(
+                    gtk.gdk.pixbuf_new_from_file_at_size(
+                    os.path.expanduser("~annuaire/photos/%s.jpg" % login),
+                    64, -1))
+            except:
+                pass
+
             # Les headers faibles doivent rejoindre le corps.
             pos = self.buffer.get_start_iter()
             for h in self.parent.conf.headers_weak:
@@ -287,12 +300,12 @@ class ArticleBuffer:
             
             self.scrolled.add(self.widget)
             self.widget.show()
-            # Zone d'zffichage des en-t€tes
+            # Zone d'affichage des en-t€tes
+            self.pane_head = gtk.HPaned()
+            self.container.pack1(self.pane_head)
             self.scrolled_head = gtk.ScrolledWindow()
             self.scrolled_head.set_policy(gtk.POLICY_AUTOMATIC,
                                           gtk.POLICY_AUTOMATIC)
-            self.container.pack1(self.scrolled_head)
-            self.scrolled_head.show()
 
             self.buffer_head = gtk.TextBuffer(self.parent.conf.tagtable)
             self.widget_head = gtk.TextView(self.buffer_head)
@@ -300,7 +313,10 @@ class ArticleBuffer:
             self.widget_head.modify_font(pango.FontDescription("monospace"))
             self.widget_head.set_wrap_mode(gtk.WRAP_WORD)
             self.scrolled_head.add(self.widget_head)
-            self.widget_head.show()
+            self.pane_head.pack1(self.scrolled_head, True)
+            self.face_head = gtk.Image()
+            self.pane_head.pack2(self.face_head, False)
+            self.pane_head.show_all()
 
         self.article = article
         self.rot13 = False
