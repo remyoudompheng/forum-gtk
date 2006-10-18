@@ -173,7 +173,7 @@ class ArticleBuffer:
                     os.path.expanduser("~annuaire/photos/%s.jpg" % login),
                     64, -1))
             except:
-                pass
+                self.face_head.clear()
 
             # Les headers faibles doivent rejoindre le corps.
             pos = self.buffer.get_start_iter()
@@ -295,14 +295,14 @@ class ArticleBuffer:
             self.scrolled = gtk.ScrolledWindow()
             self.scrolled.set_policy(gtk.POLICY_AUTOMATIC,
                                      gtk.POLICY_AUTOMATIC)
-            self.container.pack2(self.scrolled)
+            self.container.pack2(self.scrolled, True)
             self.scrolled.show()
             
             self.scrolled.add(self.widget)
             self.widget.show()
             # Zone d'affichage des en-t€tes
             self.pane_head = gtk.HPaned()
-            self.container.pack1(self.pane_head)
+            self.container.pack1(self.pane_head, False)
             self.scrolled_head = gtk.ScrolledWindow()
             self.scrolled_head.set_policy(gtk.POLICY_AUTOMATIC,
                                           gtk.POLICY_AUTOMATIC)

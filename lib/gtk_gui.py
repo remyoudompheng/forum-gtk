@@ -18,8 +18,12 @@ import main_window
 
 class MainWindow (main_window.SkelMainWindow):
     def action_savetreeasimage(self, action):
-        dialog = gtk.FileSelection("Fichier de destination")
-        dialog.set_filename("tree.png")
+        dialog = gtk.FileChooserDialog(
+            "Enregistrer l'arbre sous...",
+            self.window, gtk.FILE_CHOOSER_ACTION_SAVE,
+            (gtk.STOCK_SAVE, gtk.RESPONSE_OK,
+             gtk.STOCK_CLOSE, gtk.RESPONSE_DELETE_EVENT))
+        dialog.set_current_name("tree.png")
         if (dialog.run() == gtk.RESPONSE_OK):
             name = dialog.get_filename()
         else: return
