@@ -19,7 +19,7 @@ cp $DISTFILES dist/share/doc/forum-gtk
 cat > dist/bin/forum-gtk <<EOF
 #!/bin/sh
 
-PKGDIR=/usr/local/util/packages/forum-gtk-devel
+PKGDIR=/usr/local/util/packages/forum-gtk
 python2.5 \$PKGDIR/share/forum-gtk/main.py \$@
 EOF
 
