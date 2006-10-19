@@ -15,7 +15,7 @@ import sys
 from article_killer import *
 
 # Constantes
-PROGRAM_VERSION = "0.7"
+PROGRAM_VERSION = "0.8"
 debug_fd = sys.stderr
 
 def debug_output(string):

@@ -26,9 +26,8 @@ class MainWindow (main_window.SkelMainWindow):
         dialog.set_current_name("tree.png")
         if (dialog.run() == gtk.RESPONSE_OK):
             name = dialog.get_filename()
-        else: return
+            self.tree_tab.surface.write_to_png(name)
         dialog.destroy()
-        self.tree_tab.surface.write_to_png(name)
         
     def __init__(self, conf_source):
         self.init_common(conf_source)

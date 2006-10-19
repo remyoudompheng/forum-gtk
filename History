@@ -1,7 +1,8 @@
-Version 0.8 (07 Oct 2006)
+Version 0.8 (19 Oct 2006)
  * Factorised article ranges processing
  * Smarter updating of unread count in Group Tree.
  * Switch to Python 2.5 and Cairo rendering of thread tree
+ * Display photos
 
 Version 0.7 (08 Aug 2006)
  * Changes to unread counting method to avoid spamming servers with

@@ -1,3 +1,11 @@
+2006-10-19  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+	
+	* Tagged version 0.8
+
+2006-10-17  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* art_buffer.py: enable display of photos from annuaire
+
 2006-10-07  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
 
 	* grp_buffer.py: refresh_tree() now only modifies captions

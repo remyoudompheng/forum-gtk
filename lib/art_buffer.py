@@ -170,7 +170,7 @@ class ArticleBuffer:
             try:
                 self.face_head.set_from_pixbuf(
                     gtk.gdk.pixbuf_new_from_file_at_size(
-                    os.path.expanduser("~annuaire/photos/%s.jpg" % login),
+                    os.path.expanduser("~annuaire/www/htdocs/photos/petit/%s.jpg" % login),
                     64, -1))
             except:
                 self.face_head.clear()
