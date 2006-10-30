@@ -19,7 +19,8 @@ import pango
 from tempfile import mkstemp
 
 # Modules
-import art_buffer,grp_buffer
+from grp_buffer import *
+import art_buffer
 import nntp_io
 import flrn_config
 
@@ -73,7 +74,7 @@ class SkelMainWindow:
                              gtk.STOCK_CLOSE, gtk.RESPONSE_DELETE_EVENT))
         dialog.vbox.pack_start(gtk.Label("Choisissez un groupe"),
                                False, False, 5)
-        group_widget = grp_buffer.GroupBuffer(self, dialog.vbox.pack_start)
+        group_widget = GroupBuffer(self, dialog.vbox.pack_start)
         group_widget.display_tree(True)
         dialog.vbox.show_all()
         dialog.set_default_size(400, 500)
@@ -115,7 +116,7 @@ class SkelMainWindow:
         dialog.vbox.pack_start(gtk.Label(
             u"Cochez les groupes que vous souhaitez lire"), False, False, 5)
         # Un arbre avec des cases à cocher
-        group_widget = grp_buffer.GroupBuffer(self, dialog.vbox.pack_start, True)
+        group_widget = GroupBuffer(self, dialog.vbox.pack_start, True)
         group_widget.display_tree(True)
 
         dialog.vbox.show_all()
@@ -839,6 +840,6 @@ class SkelMainWindow:
         self.panel_big = gtk.HPaned()
         self.vbox_big.pack_start(self.panel_big, True, True, 0)
         self.panel_big.show()
-        self.group_tab = grp_buffer.GroupBuffer(self, self.panel_big.pack1)
+        self.group_tab = GroupBuffer(self, self.panel_big.pack1)
         self.group_tab.widget.get_selection().connect(
             "changed", self.select_group_callback)
