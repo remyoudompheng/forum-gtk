@@ -1,3 +1,9 @@
+2006-10-30  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+        * main_window.py,flrn_config.py: various bug fixes left after
+	restucturation.
+	* Tagged version 0.81
+
 2006-10-19  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
 	
 	* Tagged version 0.8
