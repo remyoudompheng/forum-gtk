@@ -368,7 +368,7 @@ class FlrnConfig:
         for i in self.server.groups_list():
             if i not in self.groups:
                 # Marquer les vieux messages comme lus
-                self.groups[i] = []
+                self.groups[i] = ArticleRange("")
                 if self.params['default_subscribe']:
                     self.subscribed.add(i)
                 else:
