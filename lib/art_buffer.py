@@ -166,8 +166,8 @@ class ArticleBuffer:
                     self.insert_header(self.buffer_head, h, article, pos)
 
             # La photo annuaire
-            login = article.headers['Sender'].strip().split('@')[0]
             try:
+                login = article.headers['Sender'].strip().split('@')[0]
                 self.face_head.set_from_pixbuf(
                     gtk.gdk.pixbuf_new_from_file_at_size(
                     os.path.expanduser("~annuaire/www/htdocs/photos/petit/%s.jpg" % login),

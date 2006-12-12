@@ -263,6 +263,8 @@ class SkelMainWindow:
                         self.group_tab.widget.scroll_to_cell(path)
                         # On y va
                         self.group_tab.widget.get_selection().select_path(path)
+                        self.select_group_callback(
+                            self.group_tab.widget.get_selection())
                         return
                 # Rien du tout, on met à jour le Group Buffer et les unreads
                 self.conf.update_groupsize()
@@ -515,10 +517,13 @@ class SkelMainWindow:
             dialog.set_default_size(600, 400)
 
             for l in source[0]:
-                name, text = l.split(':', 1)
-                text_buffer.insert_with_tags_by_name(
-                    text_buffer.get_end_iter(),
-                    name.decode("latin-1") + ': ', "head_name")
+                if ':' in l:
+                    name, text = l.split(':', 1)
+                    text_buffer.insert_with_tags_by_name(
+                        text_buffer.get_end_iter(),
+                        name.decode("latin-1") + ': ', "head_name")
+                else:
+                    text = l
                 text_buffer.insert_with_tags_by_name(
                     text_buffer.get_end_iter(),
                     text.decode("latin-1") + '\n', "head_content")
