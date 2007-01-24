@@ -78,22 +78,21 @@ class SkelMainWindow:
         group_widget.display_tree(True)
         dialog.vbox.show_all()
         dialog.set_default_size(400, 500)
-
+        dialog.user_data = None
         # Récupération de la sélection
-        selected_group = [None]
-        def get_user_entry(widget, resp_id, data):
+        def get_user_entry(widget, resp_id):
             if resp_id == gtk.RESPONSE_OK:
                 model, row = group_widget.widget.get_selection().get_selected()
                 if row:
                     # On vérifie que c'est un vrai groupe.
                     if model.get_value(row, GRP_COLUMN_ISREAL):
-                        data[0] = model.get_value(
+                        widget.user_data = model.get_value(
                             row, GRP_COLUMN_NAME)
 
-        dialog.connect("response", get_user_entry, selected_group)
+        dialog.connect("response", get_user_entry)
         if dialog.run() == gtk.RESPONSE_OK:
-            if selected_group[0]:
-                self.current_group = selected_group[0]
+            if dialog.user_data:
+                self.current_group = dialog.user_data
                 # Premier message non-lu
                 first, last = self.conf.server.group_stats(self.current_group)
                 if ((len(self.conf.groups[self.current_group]) == 0)
@@ -180,22 +179,22 @@ class SkelMainWindow:
                 dialog.vbox.show_all()
 
                 # Récupération de la réponse
-                artno = [1]
-                def get_user_entry(widget, resp_id, data):
+                dialog.artno = None
+                def get_user_entry(widget, resp_id):
                     if resp_id == gtk.RESPONSE_OK:
-                        data[0] = num_entry.get_value_as_int()
+                        widget.artno = num_entry.get_value_as_int()
                         return None
-                dialog.connect("response", get_user_entry, artno)
+                dialog.connect("response", get_user_entry)
                 
                 if dialog.run() == gtk.RESPONSE_OK:
                     # Recherche du Message-ID
                     msgid = self.conf.server.get_by_artno(
-                        self.current_group, artno[0])
+                        self.current_group, dialog.artno)
                     if msgid:
                         self.article_tab.display_msgid(msgid)
                     else:
                         self.error_msgbox(u'Impossible de trouver le message '
-                                          + self.current_group + ':' + str(artno[0]))
+                                          + self.current_group + ':' + str(dialog.artno))
                 dialog.destroy()
 
     def action_overview_callback(self, action, default = None):
@@ -225,19 +224,22 @@ class SkelMainWindow:
                     False, False, 0)
                 dialog.vbox.pack_start(hbox, True, True, 0)
                 dialog.vbox.show_all()
-
+                
                 # Récupération de la réponse
-                summary_range = [1, 1]
-                def get_user_entry(widget, resp_id, data):
+                dialog.summary_range = None
+                def get_user_entry(widget, resp_id):
                     if resp_id == gtk.RESPONSE_OK:
-                        data[0] = start_entry.get_value_as_int()
-                        data[1] = end_entry.get_value_as_int()
+                        widget.summary_range = [
+                            start_entry.get_value_as_int(),
+                            end_entry.get_value_as_int()]
                         return None
-                dialog.connect("response", get_user_entry, summary_range)
+                dialog.connect("response", get_user_entry)
                 
                 if dialog.run() == gtk.RESPONSE_OK:
                     self.summary_tab.display_tree(
-                        self.current_group, min(summary_range), max(summary_range))
+                        self.current_group,
+                        min(dialog.summary_range),
+                        max(dialog.summary_range))
                     self.panel_right.set_position(
                         self.panel_right.get_property("max_position"))
                 dialog.destroy()
@@ -483,17 +485,18 @@ class SkelMainWindow:
                                False, False, 0)
         dialog.vbox.pack_start(msgid_entry, False, False, 0)
         dialog.vbox.show_all()
-        msgid = [""]
+        dialog.msgid = ""
         
         def get_user_entry(widget, resp_id, data):
             if resp_id == gtk.RESPONSE_OK:
-                data[0] = msgid_entry.get_text()
+                widget.msgid = msgid_entry.get_text()
             return None
         
         dialog.connect("response", get_user_entry, msgid)
         if dialog.run() == gtk.RESPONSE_OK:
-            if not(self.article_tab.display_msgid(msgid[0])):
-                self.error_msgbox(u'Impossible de trouver le message ' + msgid[0])
+            if not(self.article_tab.display_msgid(dialog.msgid)):
+                self.error_msgbox(u'Impossible de trouver le message '
+                                  + dialog.msgid)
         dialog.destroy()
     
     def action_msgviewraw_callback(self, action):
