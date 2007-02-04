@@ -13,6 +13,7 @@ header_regexp = re.compile("([^ :]*): (.*)")
 import email.Header
 import email.Utils
 import flrn_config
+from data_types import *
 
 # Codes valides :
 # 211 GROUP
@@ -117,15 +118,7 @@ class NewsServer:
         resp, result = self.socket.xover(str(start), str(end))
 
         if resp.startswith("224"):
-            vanished = []
-            articles = [int(a[0]) for a in result]
-            articles.append(end + 1)
-            articles.insert(0, start - 1)
-            for i in xrange(1, len(articles)):
-                if (articles[i] - articles[i - 1]) > 1:
-                    vanished.extend(range(
-                        articles[i - 1] + 1, articles[i]))
-            return (result, vanished)
+            return result, [start, end]
         else:
             return None
 
@@ -242,7 +235,7 @@ def translate_header(header):
             try:
                 decoded = decoded[0][0].decode(decoded[0][1])
             except (LookupError, UnicodeDecodeError):
-                flrn_config.debug_output("[Encodage foireux] " + repr(header) + '\n')
+                debug_output("[Encodage foireux] " + repr(header) + '\n')
                 decoded = decoded[0][0].decode('latin-1')
             s = s.replace(encoded, decoded)
     return s
@@ -302,7 +295,7 @@ class Article:
             try:
                 self.body += l.decode(charset) + '\n'
             except (LookupError, UnicodeDecodeError):
-                flrn_config.debug_output('[Encodage foireux] Soi-disant '
+                debug_output('[Encodage foireux] Soi-disant '
                                          + charset + "\n    " + repr(l))
                 self.body += l.decode('latin-1') + '\n'
         return True

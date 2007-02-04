@@ -20,6 +20,7 @@ GRP_COLUMN_NAME = 0
 GRP_COLUMN_CAPTION = 1
 GRP_COLUMN_SUBSCRIBED = 2
 GRP_COLUMN_ISREAL = 3
+GRP_COLUMN_FONT = 4
 
 # Panneau d'affichage de groups
 class GroupBuffer:
@@ -269,7 +270,9 @@ class GroupBuffer:
 
         # Colonne du nom
         self.column_name = gtk.TreeViewColumn(
-            'Conti',gtk.CellRendererText(), text=1, font=4)
+            'Conti',gtk.CellRendererText(),
+            text=GRP_COLUMN_CAPTION,
+            font=GRP_COLUMN_FONT)
         self.column_name.set_resizable(True)
         self.widget.append_column(self.column_name)
         if show_subscriptions:

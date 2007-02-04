@@ -5,6 +5,7 @@
 # Rémy Oudompheng, Noël 2005
 
 import getopt, os, sys, locale
+from data_types import *
 
 HELP_STRING = u"""Syntaxe: program [-ch] [-d dir] [-n name] [--opengl]
 Options:
@@ -41,10 +42,10 @@ def main():
 
     # Messages de debug
     if ('-d' in optlist) or ('--debug' in optlist):
-        flrn_config.debug_fd = sys.stderr
-        flrn_config.debug_output(u"[Main] Activation des messages de déboguage")
+        debug_fd = sys.stderr
+        debug_output(u"[Main] Activation des messages de déboguage")
     else:
-        flrn_config.debug_fd = open(os.path.devnull, 'w')
+        debug_fd = open(os.path.devnull, 'w')
 
     conf_source = flrn_config.FlrnConfig(conf_dir, server)
 

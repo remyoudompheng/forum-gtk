@@ -23,6 +23,8 @@ import re
 import nntp_io
 import flrn_config
 
+from data_types import *
+
 # Constantes
 GRP_COLUMN_NAME = 0
 GRP_COLUMN_CAPTION = 1
@@ -35,6 +37,9 @@ SUM_COLUMN_SUBJ = 2
 SUM_COLUMN_FROM = 3
 SUM_COLUMN_DATE = 4
 SUM_COLUMN_READ = 5
+SUM_COLUMN_CAPTION = 6
+SUM_COLUMN_COLOR = 7
+SUM_COLUMN_FONT = 8
 
 class SummaryBuffer:
     # Affichage du panneau Sommaire
@@ -50,8 +55,12 @@ class SummaryBuffer:
             self.parent.action_quit_callback()
             return False
 
-        overview, vanished = self.parent.conf.server.overview(
-            group, nb_start, nb_end)
+        data_source = self.parent.conf.overview_cache[group]
+        # On prend d'avance ce qui nous intéresse
+        data_source.get_overview(
+            nb_start - self.parent.conf.params['max_backtrack'],
+            nb_end   + self.parent.conf.params['max_foretrack'])
+        overview, vanished = data_source.get_overview(nb_start, nb_end)
         ids = set([i[4] for i in overview])
         xover = []
         lowest = nb_start
@@ -74,16 +83,16 @@ class SummaryBuffer:
                         break
                 if not(sorti):
                     ids.add(ref_id)
-                    xover[0:0] = self.parent.conf.server.overview(
-                        group, art_no, art_no)[0]
+                    truc = data_source.get_item(art_no)
+                    if truc: xover[0:0] = [truc]
         
         if self.parent.conf.params['with_cousins']:
-            # On ajoute les cousins
-            overview2, vanished2 = self.parent.conf.server.overview(
-                group, max(lowest, nb_start -
-                           int(self.parent.conf.params['max_backtrack'])), 
-                           nb_start - 1)
+            overview2, vanished2 = data_source.get_overview(
+                max(lowest, nb_start -
+                    int(self.parent.conf.params['max_backtrack'])), 
+                nb_start - 1)
             vanished.extend(vanished2)
+
             # On vérifie quand même qu'ils font partie des bons threads
             for i in overview2:
                 for t in xrange(len(i[5])):
@@ -94,9 +103,9 @@ class SummaryBuffer:
                         break
         xover.extend(overview)
         # On ajoute les enfants
-        overview3, vanished3 = self.parent.conf.server.overview(
-            group, nb_end + 1, nb_end 
-            + int(self.parent.conf.params['max_backtrack']))
+        overview3, vanished3 = data_source.get_overview(
+            nb_end + 1, nb_end 
+            + int(self.parent.conf.params['max_foretrack']))
         vanished.extend(vanished3)
         for i in overview3:
             for t in xrange(len(i[5])):
@@ -152,13 +161,13 @@ class SummaryBuffer:
                     if K.article_match(heads):
                         read = K.read_after
                         if K.read_after:
-                            flrn_config.debug_output(
+                            debug_output(
                                 u'[SumBuffer] Marqué ' 
                                 + str(number) + ' comme lu ')
                             self.parent.conf.register_read(
                                 self.parent.current_group, number)
                         else:
-                            flrn_config.debug_output(
+                            debug_output(
                                 u'[SumBuffer] Marqué ' 
                                 + str(number) + ' comme non lu ')
                             self.parent.conf.register_unread(
@@ -169,23 +178,30 @@ class SummaryBuffer:
                 nntp_io.translate_header(i[2]))
             if len(real_name) == 0: author = addr
             else: author = real_name
+            # Affichage du sujet
+            caption = subject
+            try:
+                if (model.get_value(self.nodes[i[5][-1]], 2) == subject):
+                    # C'est le même sujet, on l'indique
+                    caption = "..."
+            except: pass
+            # Autres données
             date = time.strftime(time_format, email.Utils.parsedate(i[3]))
             msgid = i[4]
+            color = "black" 
+            font = "bold" if not read else "normal"
+            if not(nb_start <= number <= nb_end):
+                color = "grey"
+                font = "italic"
+            choses_affichees = [msgid, number, subject, author,
+                                date, read, caption, color, font]
             if len(i[5]) > 0 and self.nodes.has_key(i[5][-1]):
-                if model.get_value(self.nodes[i[5][-1]], 2) == subject:
-                    # C'est le même sujet, on l'indique
-                    self.nodes[msgid] = model.append(
-                        self.nodes[i[5][-1]],
-                        [msgid, number, subject, author, date, read, '...'])
-                else:
-                    self.nodes[msgid] = model.append(
-                        self.nodes[i[5][-1]],
-                        [msgid, number, subject, author, date, read, subject])
-                    
+                self.nodes[msgid] = model.append(
+                    self.nodes[i[5][-1]], choses_affichees)
             else:
                 self.nodes[msgid] = model.append(
-                    None,
-                    [msgid, number, subject, author, date, read, subject])
+                    None, choses_affichees)
+                
         self.widget.set_model(model)
         self.widget.expand_all()
         
@@ -219,12 +235,8 @@ class SummaryBuffer:
         msgid = model.get_value(art_iter, 0)
         # Était-il lu ?
         if not(model.get_value(art_iter, SUM_COLUMN_READ)):
-            model.set_value(art_iter, SUM_COLUMN_READ, True)
-            # Mise à jour de la liste de lus
-            self.parent.conf.register_read(
-                self.parent.current_group, model.get_value(art_iter, 1))
-            self.parent.group_tab.refresh_tree()
-
+            self.read_toggle(art_iter, True)
+        # Reprenons
         self.current_node = art_iter
         self.parent.article_tab.display_msgid(msgid)
         # On recentre le cadre
@@ -252,16 +264,18 @@ class SummaryBuffer:
     def read_toggle(self, iter, read):
         """Change l'état et met à jour la liste de lus"""
         self.data.set_value(iter, SUM_COLUMN_READ, read)
+        self.data.set_value(iter, SUM_COLUMN_FONT,
+                            "normal" if read else "bold")
         if read:
             # Marquer comme lu
-            flrn_config.debug_output("[SumBuffer] Article %d lu" % 
+            debug_output("[SumBuffer] Article %d lu" % 
                                      self.data.get_value(iter, SUM_COLUMN_NUM))
             self.parent.conf.register_read(
                 self.parent.current_group,
                 self.data.get_value(iter, SUM_COLUMN_NUM))
         else:
             # Marquer comme non lu
-            flrn_config.debug_output("[SumBuffer] Article %d non lu" % 
+            debug_output("[SumBuffer] Article %d non lu" % 
                                      self.data.get_value(iter, SUM_COLUMN_NUM))
             self.parent.conf.register_unread(
                 self.parent.current_group,
@@ -330,7 +344,9 @@ class SummaryBuffer:
             gobject.TYPE_STRING,  # 3:From
             gobject.TYPE_STRING,  # 4:Date
             gobject.TYPE_BOOLEAN, # 5:Lu
-            gobject.TYPE_STRING)  # 6:Truc à afficher
+            gobject.TYPE_STRING,  # 6:Truc à afficher
+            gobject.TYPE_STRING,  # 7:Couleur
+            gobject.TYPE_STRING)  # 8:Police
 
         self.container = gtk.ScrolledWindow()
         self.container.set_policy(gtk.POLICY_AUTOMATIC,
@@ -345,16 +361,25 @@ class SummaryBuffer:
         self.widget.show()
 
         self.column_no = gtk.TreeViewColumn(
-            u'Numéro', gtk.CellRendererText(), text=1)
+            u'Numéro', gtk.CellRendererText(),
+            text=SUM_COLUMN_NUM, font=SUM_COLUMN_FONT,
+            foreground=SUM_COLUMN_COLOR)
         self.column_subj = gtk.TreeViewColumn(
-            'Sujet', gtk.CellRendererText(), text=6)
+            'Sujet', gtk.CellRendererText(),
+            text=SUM_COLUMN_SUBJ, font=SUM_COLUMN_FONT,
+            foreground=SUM_COLUMN_COLOR)
         self.column_from = gtk.TreeViewColumn(
-            'Auteur', gtk.CellRendererText(), text=3)
+            'Auteur', gtk.CellRendererText(),
+            text=SUM_COLUMN_FROM, font=SUM_COLUMN_FONT,
+            foreground=SUM_COLUMN_COLOR)
         self.column_date = gtk.TreeViewColumn(
-            'Date', gtk.CellRendererText(), text=4)
+            'Date', gtk.CellRendererText(),
+            text=SUM_COLUMN_DATE, font=SUM_COLUMN_FONT,
+            foreground=SUM_COLUMN_COLOR)
         toggling_renderer = gtk.CellRendererToggle()
         self.column_read = gtk.TreeViewColumn(
-            'Lu', toggling_renderer, active=5)
+            'Lu', toggling_renderer,
+            active=SUM_COLUMN_READ)
         self.column_subj.set_resizable(True)
         #self.column_subj.set_max_width(500)
         self.column_from.set_resizable(True)

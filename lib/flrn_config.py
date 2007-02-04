@@ -7,19 +7,17 @@ import os
 import socket
 from pwd import getpwuid
 import re,time
-import string, locale
+import locale
 import email.Utils
 import nntp_io
 import sys
 
 from article_killer import *
+from data_types import *
 
 # Constantes
 PROGRAM_VERSION = "0.81"
 debug_fd = sys.stderr
-
-def debug_output(string):
-    print >> debug_fd, string.encode(locale.getpreferredencoding())
 
 # Expressions régulières du flrnrc
 encoding_regexp = re.compile(
@@ -61,169 +59,6 @@ def is_geek_time(start, end):
     u = int(end[0]) * 60 + int(end[1])
     return ((s <= t <= u) if s <= u else not(u <= t <= s))
 
-class PercentTemplate(string.Template):
-    delimiter='%'
-
-class ArticleRange(list):
-    """Contient une liste de singletons ou de couples représentant un
-    ensemble fini d'entiers"""
-    def __init__(self, numbers):
-        if numbers.strip():
-            self[:] = [[int(n) for n in k] for k in
-                       [rng.split('-') for rng in numbers.split(',')]]
-
-    def cleanup(self):
-        """Nettoyage"""
-        i = 1
-        while i < len(self):
-            if ((self[i][0] - self[i - 1][-1]) <= 1) and (self[i][-1] >= self[i - 1][0]):
-                self[i-1:i+1] = [[self[i - 1][0],
-                                  max(self[i - 1][-1], self[i][-1])]]
-                continue
-            i += 1
-
-    def trim(self, ends):
-        """On épure si nécessaire"""
-        while (len(self) > 0) and (self[0][0] < ends[0]):
-            if self[0][-1] < ends[0]:
-                del self[0]
-                continue
-            if self[0][-1] == ends[0]:
-                self[0] = [self[0][-1]]
-                continue
-            if self[0][-1] > ends[0]:
-                self[0] = [ends[0], self[0][-1]]
-                continue
-        # On épure de l'autre côté (inutile normalement)
-        while (len(self) > 0) and (self[-1][-1] > ends[1]):
-            if self[-1][0] > ends[1]:
-                del self[-1]
-                continue
-            if self[-1][0] == ends[1]:
-                self[-1] = [self[-1][0]]
-                continue
-            if self[-1][0] < ends[1]:
-                self[-1] = [self[-1][0], ends[1]]
-                continue
-
-    def to_string(self):
-        return (
-            ','.join(
-                ['-'.join([str(n) for n in rng])
-                 for rng in self]
-            )
-        ) if len(self) > 0 else ''
-
-    def how_many(self):
-        return sum([r[-1] - r[0] for r in self]) + len(self)
-
-    def owns(self, number):
-        for i in self:
-            if i[0] <= number <= i[-1]:
-                return True
-        return False
-    
-    def add_item(self, number):
-        """Marque comme lu"""
-        if self.owns(number): return False
-        if len(self) == 0:
-            self.append([number])
-            return        
-        if number < self[0][0]:
-            self.insert(0, [number])
-        elif number > self[-1][-1]:
-            self.append([number])
-        else:
-            for i in xrange(len(self)):
-                if number == (self[i][0] - 1):
-                    self[i] = [self[i][0] - 1, self[i][-1]]
-                    break
-                elif number == (self[i][-1] + 1):
-                    self[i] = [self[i][0], self[i][-1] + 1]
-                    break
-                if (i > 0) and (self[i - 1][-1] < number < self[i][0]):
-                    self.insert(i, [number])
-                    break
-        self.cleanup()
-        return True
-
-    def del_item(self, number):
-        """Marque comme non lu"""
-        if not self.owns(number): return False
-
-        for i in xrange(len(self)):
-            if number == self[i][0]:
-                if len(self[i]) == 1:
-                    del self[i]
-                else:
-                    self[i] = [self[i][0] + 1, self[i][-1]]
-                    if self[i][0] == self[i][1]:
-                        del self[i][1]
-                break
-            elif number == self[i][-1]:
-                if len(self[i]) == 1:
-                    del self[i]
-                else:
-                    self[i] = [self[i][0], self[i][-1] - 1]
-                    if self[i][0] == self[i][1]:
-                        del self[i][1]
-                break
-            elif (self[i][0] < number < self[i][-1]):
-                self[i:i+1] = [[self[i][0], number - 1],
-                                    [number + 1, self[i][-1]]]
-                if self[i][0] == self[i][1]:
-                    del self[i][1]
-                if self[i+1][0] == self[i+1][1]:
-                    del self[i+1][1]
-                break
-        self.cleanup()
-        return True
-
-    def add_range(self, range):
-        """Ajoute un intervalle"""
-        if len(self) == 0:
-            self.append([range[0], range[1]])
-        else:
-            # Insertion du bouzin
-            for i in xrange(len(self)):
-                if (range[0] - 1 <= self[i][-1]):
-                    if range[1] < self[i][0] - 1:
-                        self[i:i] = [[range[0], range[1]]]
-                        break
-                    elif self[i][0] - 1 <= range[1] :
-                        self[i] = [min(self[i][0], range[0]),
-                                  max(self[i][-1], range[1])]
-                    break
-        self.cleanup()
-        return True
-
-    def del_range(self,range):
-        """Ajoute un intervalle"""
-        i = 0
-        while i < len(self):
-            if range[0] <= self[i][0]:
-                if range[1] >= self[i][-1]:
-                    # On enlève tout
-                    del self[i]
-                    continue
-                else:
-                    # On enlève par la gauche
-                    self[i][0] = range[1] + 1
-                    break
-            if self[i][0] < range[0]:
-                if self[i][-1] > range[1]:
-                    # On enlève au milieu
-                    self[i:i+1] = [[self[i][0], range[0] - 1],
-                                  [range[1] + 1, self[i][-1]]]
-                    break
-                else:
-                    if self[i][-1] >= range[0]:
-                        # On enlève à droite
-                        self[i][-1] = range[0] - 1
-                    i += 1
-        self.cleanup()
-        return True
-                            
 class FlrnConfig:
     def make_reply(self, original):
         # En-têtes de la réponse
@@ -540,6 +375,9 @@ class FlrnConfig:
 
         self.server = nntp_io.NewsServer(
             self.params['server'], int(self.params['port']))
+        self.allgroups = self.server.groups_list()
+        self.overview_cache = dict([(g, Overview(g, self.server))
+                                    for g in self.allgroups])
         
         # Lecture du newsrc
         self.load_newsrc()
