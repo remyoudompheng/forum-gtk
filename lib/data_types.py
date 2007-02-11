@@ -190,7 +190,7 @@ class Overview:
         debug_output('[%s::get_item] Asked to get %d'
                      % (self.name, number))
         
-        if number not in self.cached:            
+        if not self.cached.owns(number):
             self.add_data(number, number)
         if number in self.data:
             return self.data[number]
@@ -200,17 +200,22 @@ class Overview:
     def get_overview(self, start, end):
         # Cas grotesques
         if end < start: start, end = end, start
+        first, last = self.server.group_stats(self.name)
+        start = max(start, first)
+        end = min(end, last)
         
         debug_output('[%s::get_overview] Asked to get %d-%d'
                      % (self.name, start, end))
         to_dl = ArticleRange([start, end])
-        for r in self.cached: to_dl.del_range(r)
+        for r in self.cached:
+            debug_output('[%s::get_overview] Already in cache %d-%d'
+                         % (self.name, r[0], r[-1]))
+            to_dl.del_range(r)
         for r in to_dl:
             self.add_data(r[0], r[1])
         result = []
         vanished = []
 
-        first, last = self.server.group_stats(self.name)
         for i in xrange(max(first, start), min(last, end) + 1):
             if i in self.data:
                 result.append(self.data[i])
@@ -224,7 +229,7 @@ class Overview:
         things, real_range = self.server.overview(self.name, start, end)
         # On indique ce qu'on a téléchargé, ou au moins demandé (si on
         # les a pas eus, inutile de redemander)
-        self.cached.add_range(real_range)
+        self.cached.add_range([start,end])
 
         # On ajoute les nouvelles données
         for i in things:
