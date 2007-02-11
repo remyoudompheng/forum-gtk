@@ -66,9 +66,9 @@ class SummaryBuffer:
         lowest = nb_start
 
         # On cherche les parents
-        for i in xrange(len(overview)):
-            for t in xrange(len(overview[ - 1 - i][5])):
-                ref_id = overview[ - 1 - i][5][- 1 - t]
+        for i in xrange(-1, -1 - len(overview), -1):
+            for t in xrange(-1, -1 - len(overview[i][5]), -1):
+                ref_id = overview[i][5][t]
                 # Déja traité ?
                 if ref_id in ids: continue
                 art = self.parent.conf.server.get_article_by_msgid(ref_id)
@@ -95,8 +95,8 @@ class SummaryBuffer:
 
             # On vérifie quand même qu'ils font partie des bons threads
             for i in overview2:
-                for t in xrange(len(i[5])):
-                    ref_id = i[5][- 1 - t]
+                for t in xrange(-1, -1 - len(i[5]), -1):
+                    ref_id = i[5][t]
                     if ref_id in ids:
                         ids.add(i[4])
                         xover[0:0] = [i]
@@ -108,8 +108,8 @@ class SummaryBuffer:
             + int(self.parent.conf.params['max_foretrack']))
         vanished.extend(vanished3)
         for i in overview3:
-            for t in xrange(len(i[5])):
-                ref_id = i[5][- 1 - t]
+            for t in xrange(-1, -1-len(i[5]), -1):
+                ref_id = i[5][t]
                 if ref_id in ids:
                     ids.add(i[4])
                     xover.append(i)
