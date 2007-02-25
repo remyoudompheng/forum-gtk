@@ -29,16 +29,16 @@ def main():
 
     # Chargement des options
     import flrn_config
-    try:
+    if '--server' in optlist:
         server = optlist['--server']
-    except KeyError:
-        try: server = optlist['-n']
-        except KeyError: server = None
-    try:
+    elif '-n' in optlist
+        server = optlist['-n']
+    else: server = None
+    if '--conf-dir' in optlist:
         conf_dir = optlist['--conf-dir']
-    except KeyError:
-        try: conf_dir = optlist['-f']
-        except KeyError: conf_dir = None
+    elif '-f' in optlist:
+        conf_dir = optlist['-f']
+    else: conf_dir = None
 
     # Messages de debug
     if ('-d' in optlist) or ('--debug' in optlist):

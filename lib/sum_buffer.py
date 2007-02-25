@@ -130,9 +130,7 @@ class SummaryBuffer:
         model = self.data
         model.clear()
         self.current_node = None
-        try:
-            del self.nodes
-        except: pass
+        if hasattr(self, 'nodes'): del self.nodes
         self.nodes = {}
 
         # Les articles inexistants sont marqués comme lus dans le newsrc
@@ -180,11 +178,10 @@ class SummaryBuffer:
             else: author = real_name
             # Affichage du sujet
             caption = subject
-            try:
+            if len(i[5] > 0) and (i[5][-1] in self.nodes):
                 if (model.get_value(self.nodes[i[5][-1]], 2) == subject):
                     # C'est le même sujet, on l'indique
                     caption = "..."
-            except: pass
             # Autres données
             date = time.strftime(time_format, email.Utils.parsedate(i[3]))
             msgid = i[4]

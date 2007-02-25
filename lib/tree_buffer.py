@@ -103,9 +103,7 @@ class TreeBuffer:
                 filled[gen] = height[-1] + COLWIDTH/2
             return center, width, altitude
 
-        try: 
-            del self.dots
-        except: pass
+        if hasattr(self, 'dots'): del self.dots
         self.dots = {}        
         self.tree = iterate(root)
         c, w, a = position(self.tree, 1, [0, 0])

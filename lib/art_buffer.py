@@ -34,7 +34,7 @@ import flrn_config
 class ArticleBuffer:
     def desusurpation(self, article):
         """En cas d'usurpation"""
-        try:
+        if 'Sender' in article.headers:
             real_login = article.headers['Sender'].strip().split('@')[0]
             from_login = email.Utils.parseaddr(
                 article.headers['From'].strip())[1].split('@')[0]
@@ -42,7 +42,7 @@ class ArticleBuffer:
                 return article.headers['From'] + ' [' + real_login + ']'
             else:
                 return article.headers['From']
-        except KeyError:
+        else:
             return article.headers['From']
 
     def insert_msgid_link(self, textbuf, string, iter):
