@@ -1,3 +1,19 @@
+2007-02-25  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* data_types.py: moved article and header handling from
+	nntp_io.py to here
+	* data_types.py: created a error handler for wrongly encoded
+	strings, with latin-1 fallback
+	* main_window.py: changed font to monospace in raw article viewer
+
+2007-02-04  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+        * data_types.py: moved data classes there
+	* sum_buffer.py: added overview caching and made the Summary
+	buffer use it. Font variation depending on whether the article is
+	read or was auto-added to connect threads.
+	* flrn_config.py: removed structures and debug config from here
+
 2006-10-30  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
 
         * main_window.py,flrn_config.py: various bug fixes left after
