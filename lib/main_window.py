@@ -510,6 +510,7 @@ class SkelMainWindow:
             text_buffer = gtk.TextBuffer(self.conf.tagtable)
             text_widget = gtk.TextView(text_buffer)
             text_widget.set_property("editable", False)
+            text_widget.modify_font(pango.FontDescription("monospace"))
             text_container = gtk.ScrolledWindow()
             text_container.set_policy(gtk.POLICY_AUTOMATIC,
                                       gtk.POLICY_AUTOMATIC)

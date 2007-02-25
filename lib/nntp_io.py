@@ -5,13 +5,6 @@
 
 import nntplib
 import sys, time
-import re
-find_encoding_regexp = re.compile("charset=(\"[^\"]*\"|[^ ]*)")
-rfc2047_regexp = re.compile("(=\?[^?]*\?[bqBQ]\?[^ ?]*\?=)")
-header_regexp = re.compile("([^ :]*): (.*)")
-
-import email.Header
-import email.Utils
 import flrn_config
 from data_types import *
 

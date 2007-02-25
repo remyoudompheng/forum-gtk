@@ -6,6 +6,15 @@
 import string, sys, locale
 import codecs
 
+import re
+find_encoding_regexp = re.compile("charset=(\"[^\"]*\"|[^ ]*)")
+rfc2047_regexp = re.compile("(=\?[^?]*\?[bqBQ]\?[^ ?]*\?=)")
+header_regexp = re.compile("([^ :]*): (.*)")
+
+import email.Header
+import email.Utils
+
+
 debug_fd = sys.stderr
 def debug_output(string):
     print >> debug_fd, string.encode(locale.getpreferredencoding())
