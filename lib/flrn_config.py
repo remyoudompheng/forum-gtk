@@ -138,14 +138,16 @@ class FlrnConfig:
         for l in newsrc:
             t = newsrc_regexp.match(l)
             if t:
-                if t.group(2) == ":":
-                    self.subscribed.add(t.group(1))
-                elif t.group(2) == "!":
-                    self.unsubscribed.add(t.group(1))
-                try:
-                    self.groups[t.group(1)] = ArticleRange(t.group(3))                    
-                except ValueError:
-                    self.groups[t.group(1)] = ArticleRange("")
+                data = t.groups()
+                if len(data) < 2: continue
+                if data[1] == ":":
+                    self.subscribed.add(data[0])
+                elif data[1] == "!":
+                    self.unsubscribed.add(data[0])
+                if len(data) >= 3:
+                    self.groups[data[0]] = ArticleRange(data[2])
+                else:
+                    self.groups[data[0]] = ArticleRange("")
         self.update_groupsize()
 
         # On évite les grotesquitudes
@@ -299,10 +301,7 @@ class FlrnConfig:
 
         # Lecture du flrnrc
         for i in rc_file:
-            try:
-                line = i.decode(encoding)
-            except:
-                line = i.decode('latin-1')
+            line = i.decode(encoding, 'latin1_fallback')
             # Option liée à un nom
             t = namedoption_regexp.match(line)
             if t:
@@ -354,21 +353,15 @@ class FlrnConfig:
         # Fin de la lecture du flrnrc
         
         # Conversion des numéros des en-têtes
-        for i in range(len(self.headers_list)):
-            try:
-                self.headers_list[i] = headers_nb[int(self.headers_list[i]) - 1]
-            except (ValueError, IndexError):
-                pass
-        for i in range(len(self.headers_hide)):
-            try:
-                self.headers_hide[i] = headers_nb[int(self.headers_hide[i]) - 1]
-            except (ValueError, IndexError):
-                pass
-        for i in range(len(self.headers_weak)):
-            try:
-                self.headers_weak[i] = headers_nb[int(self.headers_weak[i]) - 1]
-            except (ValueError, IndexError):
-                pass
+        self.headers_list = [headers_nb[int(i) - 1]
+            if i.isdigit() and (int(i) <= len(headers_nb))
+            else i for i in self.headers_list]
+        self.headers_hide = [headers_nb[int(i) - 1]
+            if i.isdigit() and (int(i) <= len(headers_nb))
+            else i for i in self.headers_hide]
+        self.headers_weak = [headers_nb[int(i) - 1]
+            if i.isdigit() and (int(i) <= len(headers_nb))
+            else i for i in self.headers_weak]
 
         # Préparation du serveur.
         self.from_header = self.params['mail_addr'] + ' (' + self.params['post_name'] + ')'
@@ -400,6 +393,3 @@ class FlrnConfig:
             except IOError, (errno, truc):
                 debug_output("[FlrnConfig] Erreur %s : %s" % (errno, truc))
                 pass
-        
-
-                

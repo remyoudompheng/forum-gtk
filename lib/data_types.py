@@ -4,6 +4,7 @@
 # Rémy Oudompheng, Noël 2005-Printemps 2007
 
 import string, sys, locale
+import codecs
 
 debug_fd = sys.stderr
 def debug_output(string):
@@ -11,6 +12,17 @@ def debug_output(string):
 
 class PercentTemplate(string.Template):
     delimiter='%'
+
+def latin1fallback_errors(exception):
+    """Handler for UnicodeDecodeError"""
+    debug_output('[Encodage foireux] %s (soi-disant %s)'
+                 % (repr(exception.object), exception.encoding))
+    return(
+        exception.object[exception.start].decode('latin-1'),
+        exception.start + 1
+        )
+
+codecs.register_error('latin1_fallback', latin1fallback_errors)
 
 class ArticleRange(list):
     """Contient une liste de singletons ou de couples représentant un
@@ -235,3 +247,148 @@ class Overview:
         for i in things:
             self.data[int(i[0])] = i
         
+# Traitement des en-têtes
+def translate_header(header):
+    """Décode un entête "selon" la RFC2047"""
+    s = header.decode("latin-1")
+    todo = True
+    while todo:
+        todo = rfc2047_regexp.search(s)
+        if todo:
+            encoded = todo.group(1).replace(' ', '')
+            try:
+                decoded = email.Header.decode_header(encoded)
+            except UnicodeDecodeError:
+                break
+            decoded = decoded[0][0].decode(decoded[0][1], 'latin1_fallback')
+            s = s.replace(encoded, decoded)
+    return s
+    
+def untranslate_header(header, encoding):
+    """Encode un en-tête"""
+    words = header.split(" ")
+    s = ""
+    for w in words:
+        try:
+            s += w.encode('us-ascii') + " "
+        except:
+            s += email.Header.Header(w, encoding).encode() + " "
+    return s[:-1]
+
+# Conversions sur les articles
+class Article:
+    def from_nntplib(self, nntplib_list):
+        """Lit un article au format [ [header1, header2...],
+                                      [ligne1, ligne2,...] ]"""
+        if not(nntplib_list):
+            return False
+        # En-têtes
+        del self.headers
+        headers_tmp = []
+        for h in nntplib_list[0]:
+            test = header_regexp.match(h)
+            if test:
+                headers_tmp.append([test.group(1), test.group(2)])
+            else:
+                if len(headers_tmp) > 0:
+                    headers_tmp[-1][1] += h.strip()
+        # Encodage
+        charset = "latin-1"
+
+        self.headers = dict(
+            [(h[0], translate_header(h[1])) for h in headers_tmp])
+        if "Content-Transfer-Encoding" in self.headers:
+            if (self.headers["Content-Transfer-Encoding"].lower().strip()
+                == "quoted-printable"):
+                nntplib_list[1] = '\n'.join(
+                    nntplib_list[1]).decode('quopri_codec').split('\n')
+            if (self.headers["Content-Transfer-Encoding"].lower().strip()
+                == 'base64'):
+                nntplib_list[1] = '\n'.join(
+                    nntplib_list[1]).decode('base64_codec').split('\n')
+        if 'Content-Type' in self.headers:
+            found = find_encoding_regexp.search(self.headers['Content-Type'])
+            if found:
+                charset = found.group(1).strip('"')
+
+        # Corps
+        self.body = ''
+        for l in nntplib_list[1]:
+            self.body += l.decode(charset, 'latin1_fallback') + '\n'
+        return True
+
+    def from_utf8_text(self, text, config):
+        """Prépare un article pour l'envoi"""
+        parts = text.split('\n\n', 1)
+        header_part = parts[0].split('\n')
+        output = ''
+
+        # Lecture des en-têtes
+        del self.headers
+        self.headers = {}
+        for l in header_part:
+            t = header_regexp.match(l)
+            if t:
+                self.headers[t.group(1)] = t.group(2)
+        for myhdr, t in config.my_hdrs.iteritems():
+            if not(self.headers.has_key(myhdr)):
+                self.headers[myhdr] = t
+                
+        self.body = parts[1]
+
+    def to_raw_format(self, config):
+        for h in self.headers:
+            if h == 'From':
+                # Python encode n'importe comment
+                name, addr = email.Utils.parseaddr(self.headers[h])
+                name = untranslate_header(name, self.encoding)
+                addr = untranslate_header(addr, self.encoding)
+                self.headers[h] = addr + ' (' + name + ')'
+            else:
+                self.headers[h] = untranslate_header(
+                    self.headers[h], self.encoding)
+
+        # Choix d'un encodage
+        encodings = [a.strip('\'"') for a in 
+                     config.params['post_charsets'].split()]
+        encodings[0:0] = ['us-ascii']
+        encodings.append('utf-8')
+
+        try:
+            # Recherche d'un encodage défini par l'utilisateur
+            found = find_encoding_regexp.search(self.headers['Content-Type'])
+            if found:
+                encodings[0:0] = [found.group(1).strip('"')]
+        except KeyError:
+            pass
+
+        encoding = None
+        for enc in encodings:
+            try:
+                body_encoded = self.body.encode(enc)
+                encoding = enc
+                break
+            except UnicodeError:
+                continue
+        if encoding == None: return None
+
+        self.headers['Content-Type'] = 'text/plain;charset=' + encoding
+
+        if 'Content-Transfer-Encoding' in self.headers:
+            if (self.headers['Content-Transfer-Encoding']
+                in ['base64', 'quoted-printable']):
+                body_encoded = body_encoded.encode(
+                    self.headers['Content-Transfer-Encoding'])
+        else:
+            self.headers['Content-Transfer-Encoding'] = '8bit'
+
+        output = '\n'.join([h + ': ' + self.headers[h]
+                            for h in self.headers]).encode('us-ascii')
+        output += '\n\n'
+        output += body_encoded
+        return output
+
+    def __init__(self, encoding = "iso-8859-1"):
+        self.headers = {}
+        self.body = ""
+        self.encoding = encoding
