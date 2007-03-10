@@ -1,0 +1,47 @@
+<ui>
+    <menubar>
+        <menu name="GrpMenu" action="GrpMenuAction">
+            <menuitem name="GrpGoto" action="GrpGotoAction"/>
+            <menuitem name="Subscribe" action="SubscribeAction"/>
+            <menuitem name="GrpSync" action="GrpSyncAction"/>
+        </menu>
+        <menu name="SumMenu" action="SumMenuAction">
+            <menuitem name="SumGoto" action="SumGotoAction"/>
+            <menuitem name="Overview" action="OverviewAction"/>
+            <separator/>
+            <menuitem name="NextUnread" action="NextUnreadAction"/>
+            <menuitem name="ZapReplies" action="ZapRepliesAction"/>
+            <menuitem name="ZapThread" action="ZapThreadAction"/>
+            <menuitem name="UnzapReplies" action="UnzapRepliesAction"/>
+            <menuitem name="UnzapThread" action="UnzapThreadAction"/>
+            <separator/>
+            <menuitem name="SaveTreeAsImage" action="SaveTreeAsImageAction"/>
+        </menu>
+        <menu name="ArtMenu" action="ArtMenuAction">
+            <menuitem name="New" action="NewAction"/>
+            <menuitem name="Reply" action="ReplyAction"/>
+            <menuitem name="Cancel" action="CancelAction"/>
+            <menuitem name="Supersede" action="SupsedeAction"/>
+            <separator/>
+            <menuitem name="ParentGoto" action="GotoParentAction"/>
+            <menuitem name="MsgidGoto" action="MsgidGotoAction"/>
+            <menuitem name="MsgViewRaw" action="MsgViewRawAction"/>
+            <menuitem name="MsgRot13ify" action="MsgRot13Action"/>
+        </menu>
+        <menuitem name="HistoryMenu" action="HistoryAction"/>
+        <menu name="ProgMenu" action="ProgMenuAction">
+            <menuitem name="QuitMenu" action="QuitAction"/>
+            <menuitem name="QuitKillMenu" action="QuitKillAction"/>
+        </menu>
+    </menubar>
+    <toolbar>
+        <toolitem name="New" action="NewAction"/>
+        <toolitem name="Reply" action="ReplyAction"/>
+        <toolitem name="Cancel" action="CancelAction"/>
+        <toolitem name="Supersede" action="SupsedeAction"/>
+        <separator/>
+        <toolitem name="ParentGoto" action="GotoParentAction"/>
+        <toolitem name="Quit" action="QuitAction"/>
+    </toolbar>
+</ui>
+
