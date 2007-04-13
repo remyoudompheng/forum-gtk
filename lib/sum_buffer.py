@@ -178,7 +178,7 @@ class SummaryBuffer:
             else: author = real_name
             # Affichage du sujet
             caption = subject
-            if len(i[5] > 0) and (i[5][-1] in self.nodes):
+            if (len(i[5]) > 0) and (i[5][-1] in self.nodes):
                 if (model.get_value(self.nodes[i[5][-1]], 2) == subject):
                     # C'est le même sujet, on l'indique
                     caption = "..."
@@ -258,7 +258,7 @@ class SummaryBuffer:
             self.parent.tree_tab.draw_tree()
         return False
 
-    def read_toggle(self, iter, read):
+    def read_toggle(self, iter, read, refresh=True):
         """Change l'état et met à jour la liste de lus"""
         self.data.set_value(iter, SUM_COLUMN_READ, read)
         self.data.set_value(iter, SUM_COLUMN_FONT,
@@ -277,7 +277,7 @@ class SummaryBuffer:
             self.parent.conf.register_unread(
                 self.parent.current_group,
                 self.data.get_value(iter, SUM_COLUMN_NUM))
-        self.parent.group_tab.refresh_tree()
+        if refresh: self.parent.group_tab.refresh_tree()
 
     def read_toggle_callback(self, widget, path, data=None):
         """Callback pour changer l'état"""
@@ -287,9 +287,10 @@ class SummaryBuffer:
 
     def set_replies_read(self, iter, read):
         """Modification d'état récursive"""
-        self.read_toggle(iter, read)
+        self.read_toggle(iter, read, False)
         for i in xrange(self.data.iter_n_children(iter)):
-            self.set_replies_read(self.data.iter_nth_child(iter, i), read)
+            self.set_replies_read(
+                self.data.iter_nth_child(iter, i), read)
 
     def click_callback(self, widget, event):
         if (event.type == gtk.gdk.BUTTON_PRESS) and event.button == 3:

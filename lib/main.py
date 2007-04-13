@@ -31,7 +31,7 @@ def main():
     import flrn_config
     if '--server' in optlist:
         server = optlist['--server']
-    elif '-n' in optlist
+    elif '-n' in optlist:
         server = optlist['-n']
     else: server = None
     if '--conf-dir' in optlist:

@@ -5,6 +5,7 @@
 	* data_types.py: created a error handler for wrongly encoded
 	strings, with latin-1 fallback
 	* main_window.py: changed font to monospace in raw article viewer
+	* Removed various unnecessary exception throws
 
 2007-02-04  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
 

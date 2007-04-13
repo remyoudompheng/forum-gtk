@@ -1,7 +1,7 @@
 -- Forum-gtk: fenêtre principale
 -- Rémy Oudompheng, Mars 2007
 
-module MainWindow
+module Main
     where
 
 import Graphics.UI.Gtk
@@ -9,6 +9,8 @@ import Graphics.UI.Gtk
 xml_menu :: IO String
 xml_menu = do
     readFile "menu.xml"
+
+main = create_window
 
 create_window :: IO ()
 create_window = do

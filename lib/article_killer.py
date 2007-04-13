@@ -39,6 +39,7 @@ class KillRuleCondition:
         data = rule_regexp.match(line)
         if not(data):
             self.killme = True
+            return
         else:
             self.killme = False
             self.negate = data.group(1) == '^'
@@ -49,6 +50,8 @@ class KillRuleCondition:
             else:
                 self.rule = re.compile(data.group(4).strip())
                 self.match = self.match_re
+        debug_output('[KillFile] New rule on %s, matches %s' 
+                    % (self.header, self.rule.pattern))
 
 class KillRule:
     # group_rule: règle de choix du groupe
@@ -139,6 +142,9 @@ class KillRule:
             if l[0] == 'F':
                 self.read_before = ((l in ['Fread', 'Fkilled'])
                                    and (l not in ['Funread', 'Funkilled']))
+        debug_output('[KillFile] Rules read for ' + 
+                    (self.group_rule if self.match_rule != RULE_REGEXP
+                    else self.group_rule.pattern))
 
         # A-t-on besoin de l'article entier ?
         for i in self.conditions:
