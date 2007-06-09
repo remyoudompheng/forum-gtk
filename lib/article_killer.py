@@ -23,8 +23,7 @@ OVERVIEW_CONTENTS = [
 class KillRuleCondition:
     def match_re(self, string):
         """Match sur regexp"""
-        m = self.rule.match(string)
-        if m and (m.start() == 0) and (m.end() == len(string)):
+        if self.rule.match(string):
             debug_output('[Killfile] Match ' + string
                          + ' on ' +  self.header + " : "
                          + self.rule.pattern)
@@ -58,11 +57,12 @@ class KillRule:
     # art_rules: règles de choix de l'article
     def group_re_match(self, string):
         """Matche un groupe selon (re)self.group_rule"""
-        m = self.group_rule.match(string)
-        if m and (m.start() == 0) and (m.end() == len(string)):
+        if self.group_rule.match(string):
             debug_output('[Killfile] Match ' +  string 
                                      + ' on ' + self.group_rule.pattern)
             return True
+        debug_output('[Killfile] No match ' +  string 
+                                     + ' on ' + self.group_rule.pattern)
         return False
 
     def group_list_match(self, string):
@@ -71,6 +71,8 @@ class KillRule:
             debug_output('[Killfile] Match ' +  string 
                                      + ' in list ' + repr(self.group_rule))
             return True
+        debug_output('[Killfile] No match ' +  string 
+                                     + ' on ' + self.group_rule.pattern)
         return False
 
     def article_match(self, headers):

@@ -487,12 +487,12 @@ class SkelMainWindow:
         dialog.vbox.show_all()
         dialog.msgid = ""
         
-        def get_user_entry(widget, resp_id, data):
+        def get_user_entry(widget, resp_id):
             if resp_id == gtk.RESPONSE_OK:
                 widget.msgid = msgid_entry.get_text()
             return None
         
-        dialog.connect("response", get_user_entry, msgid)
+        dialog.connect("response", get_user_entry)
         if dialog.run() == gtk.RESPONSE_OK:
             if not(self.article_tab.display_msgid(dialog.msgid)):
                 self.error_msgbox(u'Impossible de trouver le message '

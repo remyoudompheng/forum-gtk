@@ -322,6 +322,11 @@ class Article:
 
         # Corps
         self.body = ''
+        # On vérifie que l'encodage existe
+        try: 
+            ''.decode(charset)
+        except LookupError: 
+            charset = 'latin-1'
         for l in nntplib_list[1]:
             self.body += l.decode(charset, 'latin1_fallback') + '\n'
         return True
