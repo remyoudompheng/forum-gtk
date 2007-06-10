@@ -190,7 +190,7 @@ class NewsServer:
                 self.retry_connect()
                 self.socket.group(group)
                 resp = self.socket.post(file)
-        except nntplib.TemporaryError, handler:
+        except nntplib.NNTPTemporaryError, handler:
             return u"Erreur. Réponse du serveur " + handler.args[0]
         if resp.startswith("240"):
             return None

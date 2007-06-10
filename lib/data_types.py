@@ -326,7 +326,7 @@ class Article:
         try: 
             ''.decode(charset)
         except LookupError: 
-            charset = 'latin-1'
+            charset = 'utf-8'
         for l in nntplib_list[1]:
             self.body += l.decode(charset, 'latin1_fallback') + '\n'
         return True
