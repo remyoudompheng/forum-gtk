@@ -257,7 +257,7 @@ class SkelMainWindow:
             iter = self.summary_tab.get_next_row(iter)
             if not(iter):
                 for g in self.conf.unreads:
-                    if self.conf.unreads[g] > 0:
+                    if (self.conf.unreads[g] > 0) and (g in self.conf.subscribed):
                         # Ah ! Des messages non lus !
                         self.current_group = g
                         path = self.group_tab.data.get_path(
