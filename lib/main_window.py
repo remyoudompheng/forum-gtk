@@ -763,6 +763,7 @@ class SkelMainWindow:
                 <separator/>
                 <toolitem name="NextGoto" action="NextUnreadAction"/>
                 <toolitem name="ParentGoto" action="GotoParentAction"/>
+                <separator/>
                 <toolitem name="Quit" action="QuitAction"/>
             </toolbar>
         </ui>
