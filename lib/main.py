@@ -53,8 +53,8 @@ def main():
     unreads = 0
     if ('-c' in optlist) or ('--co' in optlist):
         conf_source.update_unreads()
-        for g in conf_source.unreads:
-            if conf_source.unreads[g] > 0:
+        for g in conf_source.subscribed:
+            if (conf_source.unreads[g] > 0):
                 print '  ' + g + ':',  conf_source.unreads[g], \
                       ('article non lu.' if conf_source.unreads[g] == 1
                        else 'articles non lus.')
