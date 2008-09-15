@@ -256,8 +256,8 @@ class SkelMainWindow:
             # C'est lu, on passe à la suite
             iter = self.summary_tab.get_next_row(iter)
             if not(iter):
-                for g in self.conf.unreads:
-                    if self.conf.unreads[g] > 0:
+                for g in self.conf.subscribed:
+                    if self.conf.unreads[g] > 0 :
                         # Ah ! Des messages non lus !
                         self.current_group = g
                         path = self.group_tab.data.get_path(
@@ -759,9 +759,8 @@ class SkelMainWindow:
             <toolbar>
                 <toolitem name="New" action="NewAction"/>
                 <toolitem name="Reply" action="ReplyAction"/>
-                <toolitem name="Cancel" action="CancelAction"/>
-                <toolitem name="Supersede" action="SupsedeAction"/>
                 <separator/>
+                <toolitem name="NextGoto" action="NextUnreadAction"/>
                 <toolitem name="ParentGoto" action="GotoParentAction"/>
                 <toolitem name="Quit" action="QuitAction"/>
             </toolbar>

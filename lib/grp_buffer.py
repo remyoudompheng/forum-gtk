@@ -134,6 +134,12 @@ class GroupBuffer:
             new_data = self.format_node(data, depth)
             for j in xrange(5):
                 self.data.set_value(item, j, new_data[j])
+        # Mise à jour de la barre d'état
+        self.parent.status_bar.pop(0)
+        self.parent.status_bar.push(
+            0, "Groupe " + self.parent.current_group + ", "
+            + str(self.parent.conf.unreads[self.parent.current_group])
+            + " messages non lus.")
 
     def toggle_callback(self, widget, path, data=None):
         """Cochage de case"""

@@ -16,7 +16,7 @@ from article_killer import *
 from data_types import *
 
 # Constantes
-PROGRAM_VERSION = "0.81"
+PROGRAM_VERSION = "0.91"
 debug_fd = sys.stderr
 
 # Expressions régulières du flrnrc
@@ -149,6 +149,7 @@ class FlrnConfig:
                 else:
                     self.groups[data[0]] = ArticleRange("")
         self.update_groupsize()
+        self.update_unreads()
 
         # On évite les grotesquitudes
         self.unsubscribed -= self.subscribed
@@ -222,7 +223,6 @@ class FlrnConfig:
         """Met à jour le nombre de non lus"""
         for g, read in self.groups.iteritems():
             self.unreads[g] = self.groupsize[g] - read.how_many()
-            if g in self.unsubscribed: del self.unreads[g]
             
     def eval_string(self, s):
         if s.startswith("'") and s.startswith("'"):

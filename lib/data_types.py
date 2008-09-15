@@ -297,10 +297,10 @@ class Article:
         for h in nntplib_list[0]:
             test = header_regexp.match(h)
             if test:
-                headers_tmp.append([test.group(1), test.group(2)])
+                headers_tmp.append([test.group(1), test.group(2).strip('\n')])
             else:
                 if len(headers_tmp) > 0:
-                    headers_tmp[-1][1] += h.strip()
+                    headers_tmp[-1][1] += ' ' + h.lstrip().rstrip('\n')
         # Encodage
         charset = "latin-1"
 

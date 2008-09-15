@@ -1,3 +1,12 @@
+2008-09-15  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+        * sum_buffer.py, grp_buffer.py: tentatives de corrections de
+	bugs, ajouts à la barre d'état
+	* main_window.py: modification de la barre de boutons
+	(proposition de Nicolas George)
+        * main.py,flrn_config.py,main_window.py: conserver en mémoire la liste
+	des articles non lus même pour les groupes désabonnés
+
 2007-02-25  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
 
 	* data_types.py: moved article and header handling from
