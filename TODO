@@ -13,6 +13,8 @@ Propositions de Cigaes
 - Pour l'opération « nouveau message », afficher une zone de saisie
   préalable pour le sujet, ça évitera qu'ils l'oublient.
 
+-> FAIT
+
 - Quand l'opération « message suivant » entre dans un groupe, aller
   directement au premier message non-lu plutôt que d'attendre une étape dont
   l'utilité me paraît pour le moins douteuse.
