@@ -747,10 +747,11 @@ class SkelMainWindow:
                     <separator/>
                     <menuitem name="ParentGoto" action="GotoParentAction"/>
                     <menuitem name="MsgidGoto" action="MsgidGotoAction"/>
+                    <menuitem name="HistoryShow" action="HistoryAction"/>
+                    <separator/>
                     <menuitem name="MsgViewRaw" action="MsgViewRawAction"/>
                     <menuitem name="MsgRot13ify" action="MsgRot13Action"/>
                 </menu>
-                <menuitem name="HistoryMenu" action="HistoryAction"/>
                 <menu name="ProgMenu" action="ProgMenuAction">
                     <menuitem name="QuitMenu" action="QuitAction"/>
                     <menuitem name="QuitKillMenu" action="QuitKillAction"/>
