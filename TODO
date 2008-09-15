@@ -1,0 +1,40 @@
+Propositions de Cigaes 
+
+- Dans la barre de boutons, garder « nouveau », « répondre », « quitter »,
+  ajouter « message suivant » (avec un tooltip qui dit clairement que c'est
+  le suivant à lire), et virer les autres, dont l'utilité est nettement plus
+  limitée, et qui sont de toutes façon accessibles par le menu.
+
+-> FAIT
+
+- Pour les opérations « nouveau message » et « répondre », donner le focus à
+  la zone de texte, et placer le curseur à la fin.
+
+- Pour l'opération « nouveau message », afficher une zone de saisie
+  préalable pour le sujet, ça évitera qu'ils l'oublient.
+
+- Quand l'opération « message suivant » entre dans un groupe, aller
+  directement au premier message non-lu plutôt que d'attendre une étape dont
+  l'utilité me paraît pour le moins douteuse.
+
+- Au contraire, quand l'opération « message suivant » se prépare à sortir
+  d'un groupe, ajouter une étape préalable. Rationale pour cette demande :
+  on veut lire la discussion en entier avant de répondre à un message, pour
+  éviter les redites, mais on voudrait éviter de s'embarquer dans une
+  nouvelle discussion et d'avoir du mal à retrouver le bon conti.
+
+  Au fait, est-ce que « message suivant » cherche à détecter, à la fin d'un
+  groupe, s'il y a de nouveaux messages avant de sauter au suivant ?
+
+- En bas, en plus de « groupe ens.forum.alt.opipo », ajouter « 42 messages à
+  lire ».
+
+-> FAIT
+
+- Ne pas afficher l'arbre des contis par défaut.
+
+- Ne pas afficher le sommaire en haut par défaut. Ce qui pose la question
+  d'où mettre l'alpha-tree dans ce cas.
+
+- Le menu « historique » est bizarre.
+
