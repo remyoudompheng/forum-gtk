@@ -204,9 +204,7 @@ class SummaryBuffer:
         
         # Informations
         self.parent.group_tab.refresh_tree()
-        self.parent.status_bar.pop(0)
-        self.parent.status_bar.push(0, "Groupe " + self.parent.current_group)
-
+        
     def get_next_row(self, iter):
         res = None
         # On essaie de prendre le fils

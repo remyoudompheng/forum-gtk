@@ -742,9 +742,8 @@ class SkelMainWindow:
             <toolbar>
                 <toolitem name="New" action="NewAction"/>
                 <toolitem name="Reply" action="ReplyAction"/>
-                <toolitem name="Cancel" action="CancelAction"/>
-                <toolitem name="Supersede" action="SupsedeAction"/>
                 <separator/>
+                <toolitem name="NextGoto" action="NextUnreadAction"/>
                 <toolitem name="ParentGoto" action="GotoParentAction"/>
                 <toolitem name="Quit" action="QuitAction"/>
             </toolbar>

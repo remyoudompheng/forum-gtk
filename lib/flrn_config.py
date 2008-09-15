@@ -149,6 +149,7 @@ class FlrnConfig:
                 else:
                     self.groups[data[0]] = ArticleRange("")
         self.update_groupsize()
+        self.update_unreads()
 
         # On évite les grotesquitudes
         self.unsubscribed -= self.subscribed
