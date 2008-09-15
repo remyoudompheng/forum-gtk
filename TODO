@@ -10,6 +10,8 @@ Propositions de Cigaes
 - Pour les opérations « nouveau message » et « répondre », donner le focus à
   la zone de texte, et placer le curseur à la fin.
 
+-> FAIT
+
 - Pour l'opération « nouveau message », afficher une zone de saisie
   préalable pour le sujet, ça évitera qu'ils l'oublient.
 

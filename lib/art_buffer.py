@@ -439,5 +439,6 @@ class ArticleEditor:
             self.ui_manager.get_widget("/ui/toolbar"), False, False, 0)
         self.article_widget = ArticleBuffer(
             article, True, self.vbox_main.pack_start, self)
+        self.article_widget.widget.grab_focus();
         self.article_widget.widget.connect("key-press-event", self.formatter_callback)
         
