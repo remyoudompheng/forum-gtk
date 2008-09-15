@@ -371,7 +371,24 @@ class SkelMainWindow:
             draft.headers['Newsgroups'] = self.current_group
         else:
             draft.headers['Newsgroups'] = ""
-        draft.headers['Subject'] = "(mettre un sujet)"
+	dialog = gtk.Dialog(u"Nouveau message",
+	    self.window, gtk.DIALOG_MODAL,
+	    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+		gtk.STOCK_OK, gtk.RESPONSE_OK)
+	    )
+	hbox = gtk.HBox(False, 8);
+	dialog.vbox.pack_start(hbox, False, False, 0)
+	hbox.pack_start(gtk.Label(u"Sujet :"), False, False, 0)
+	hbox.set_border_width(8);
+	subject_entry = gtk.Entry()
+	hbox.pack_start(subject_entry, True, True, 0)
+	hbox.show_all()
+	dialog_ret = dialog.run()
+	subject = subject_entry.get_text()
+	dialog.destroy()
+	if(dialog_ret != gtk.RESPONSE_OK):
+	    return
+        draft.headers['Subject'] = subject
         editor = art_buffer.ArticleEditor(draft, self.conf)
         editor.window.connect("delete_event",
                               self.editor_die_callback, editor)
