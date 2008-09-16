@@ -370,39 +370,51 @@ class ArticleEditor:
     def action_cancel_callback(self, action):
         self.window.event(gtk.gdk.Event(gtk.gdk.DELETE))
 
-    def formatter_callback(self, widget, event):
-        if event.string and (event.string in ' '):
-            buffer = widget.get_buffer().get_text(
-                widget.get_buffer().get_start_iter(),
-                widget.get_buffer().get_end_iter()).decode('utf-8')
-            iter = widget.get_buffer().get_iter_at_mark(
-                widget.get_buffer().get_insert())
-            # Si on édite les headers, on ne veut pas se retrouver 
-            # à Trifouillis-les-Oies
-            nb_heads = len(buffer.split('\n\n')[0].split('\n'))
-            if nb_heads > iter.get_line():
-                return False
-            # Calcul des positions pour remettre le curseur au bon endroit
-            anti_curpos = len(buffer) - iter.get_offset()
-            anti_linepos = widget.get_buffer().get_line_count() - iter.get_line()
-            curpos = iter.get_line_offset()
-            
-            article = nntp_io.Article()
-            article.from_utf8_text(widget.get_buffer().get_text(
-                    widget.get_buffer().get_start_iter(),
-                    widget.get_buffer().get_end_iter()).decode('utf-8'),
-                                   self.conf)
-            lines = article.body.split('\n')
-            if anti_linepos <= len(lines):
-                if ((len(lines[len(lines) - anti_linepos]) > 72) 
-                    and (curpos >= len(lines[len(lines) - anti_linepos]) - 2)):
-                    lines[len(lines) - anti_linepos] = textwrap.fill(
-                        lines[len(lines) - anti_linepos], width=76)
-            article.body = '\n'.join(lines)
-            self.article_widget.display(article)
-            widget.get_buffer().place_cursor(widget.get_buffer().get_iter_at_offset(
-                widget.get_buffer().get_char_count() - anti_curpos))
+    def formatter_callback(self, object, iterator, text, length):
+        # On évite les boucles infinies
+        object.stop_emission('insert-text')
+        object.handler_block(self.format_handler)
+        # On met le texte
+        line1 = object.get_iter_at_mark(object.get_insert()).get_line()-1
+        object.insert_at_cursor(text)
+        line2 = object.get_iter_at_mark(object.get_insert()).get_line()
+        if ' ' not in text:
+            object.handler_unblock(self.format_handler)
             return False
+        # C'est parti
+        buffer = object.get_text(
+            object.get_start_iter(),
+            object.get_end_iter()).decode('utf-8')
+        iter = object.get_iter_at_mark(object.get_insert())
+        
+        # Si on édite les headers, on ne veut pas se retrouver 
+        # à Trifouillis-les-Oies
+        nb_heads = len(buffer.split('\n\n')[0].split('\n'))
+        if nb_heads > iter.get_line():
+            object.handler_unblock(self.format_hid)
+            return False
+        # Calcul des positions pour remettre le curseur au bon endroit
+        anti_curpos = len(buffer) - iter.get_offset()
+        anti_linepos = object.get_line_count() - iter.get_line()
+        curpos = iter.get_line_offset()
+        # Découpage 
+        article = nntp_io.Article()
+        article.from_utf8_text(object.get_text(
+            object.get_start_iter(),
+            object.get_end_iter()).decode('utf-8'),
+            self.conf)
+        lines = article.body.split('\n')
+        line1 -= nb_heads; line2 -= nb_heads
+        for i in xrange(line1,line2):
+            if len(lines[i]) > 78:
+                lines[i] = textwrap.fill(lines[i], width=76)
+        # Recollage
+        article.body = '\n'.join(lines)
+        self.article_widget.display(article)
+        object.place_cursor(object.get_iter_at_offset(
+            object.get_char_count() - anti_curpos))
+        # C'est fini
+        object.handler_unblock(self.format_handler)
         return False
         
     def __init__(self, article, config):
@@ -439,6 +451,8 @@ class ArticleEditor:
             self.ui_manager.get_widget("/ui/toolbar"), False, False, 0)
         self.article_widget = ArticleBuffer(
             article, True, self.vbox_main.pack_start, self)
-        self.article_widget.widget.grab_focus();
-        self.article_widget.widget.connect("key-press-event", self.formatter_callback)
+        self.article_widget.widget.grab_focus()
+        self.format_handler = self.article_widget.buffer.connect(
+            "insert-text", self.formatter_callback)
+
         

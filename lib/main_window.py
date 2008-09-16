@@ -383,6 +383,7 @@ class SkelMainWindow:
         subject_entry = gtk.Entry()
         hbox.pack_start(subject_entry, True, True, 0)
         hbox.show_all()
+        dialog.set_default_response(gtk.RESPONSE_OK)
         dialog_ret = dialog.run()
         subject = subject_entry.get_text()
         dialog.destroy()
