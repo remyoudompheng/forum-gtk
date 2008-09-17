@@ -1,3 +1,12 @@
+2008-09-17  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* Marquage de la version 0.91
+
+2008-09-16  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
+
+	* art_buffer.py: modification des conditions de redécoupage des
+	lignes
+
 2008-09-15  Rémy Oudompheng  <oudomphe@clipper.ens.fr>
 
         * sum_buffer.py, grp_buffer.py: tentatives de corrections de

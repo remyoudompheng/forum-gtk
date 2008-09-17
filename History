@@ -1,10 +1,11 @@
-Version 0.91 (?? Sep 2008)
+Version 0.91 (17 Sep 2008)
  Features :
   * Modifications d'interface proposées par Cigaes : barre de boutons,
   nombre de messages non lus dans la barre d'état
 
  Bugs :
   * Problèmes avec les groupes désabonnés
+  * Les lignes ne se redécoupent pas pour un copier-coller
 
 Version 0.9 (10 Sep 2007)
  * Summary buffer uses different fonts to help recognising articles
