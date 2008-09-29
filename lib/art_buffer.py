@@ -391,7 +391,7 @@ class ArticleEditor:
         # à Trifouillis-les-Oies
         nb_heads = len(buffer.split('\n\n')[0].split('\n'))
         if nb_heads > iter.get_line():
-            object.handler_unblock(self.format_hid)
+            object.handler_unblock(self.format_handler)
             return False
         # Calcul des positions pour remettre le curseur au bon endroit
         anti_curpos = len(buffer) - iter.get_offset()

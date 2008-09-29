@@ -264,9 +264,9 @@ def translate_header(header):
     while todo:
         todo = rfc2047_regexp.search(s)
         if todo:
-            encoded = todo.group(1).replace(' ', '')
+            encoded = todo.group(1)
             try:
-                decoded = email.Header.decode_header(encoded)
+                decoded = email.Header.decode_header(encoded.replace(' ', ''))
             except UnicodeDecodeError:
                 break
             decoded = decoded[0][0].decode(decoded[0][1], 'latin1_fallback')
