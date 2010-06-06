@@ -1,0 +1,599 @@
+<?xml version="1.0"?>
+<interface>
+  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-naming-policy project-wide -->
+  <object class="GtkWindow" id="window_main">
+    <property name="width_request">800</property>
+    <property name="height_request">600</property>
+    <child>
+      <object class="GtkVBox" id="vbox1">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkMenuBar" id="menubar">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkMenuItem" id="menu_groups">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Groupes</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu1">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkMenuItem" id="mi_grpgoto">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_grpgoto</property>
+                        <property name="use_action_appearance">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="mi_subscribe">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_subscribe</property>
+                        <property name="use_action_appearance">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="mi_grpsync">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_grpsync</property>
+                        <property name="use_action_appearance">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menu_sommaire">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Sommaire</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu2">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkMenuItem" id="mi_sumgoto">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_sumgoto</property>
+                        <property name="use_action_appearance">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="mi_overview">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_overview</property>
+                        <property name="use_action_appearance">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="sep1">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="mi_nextunread">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_nextunread</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="mi_zapreplies">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_zapreplies</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="mi_zapthread">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_zapthread</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="mi_unzapreplies">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_unzapreplies</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="mi_unzapthread">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_unzapthread</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="sep2">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="mi_savetree">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_savetree</property>
+                        <property name="use_action_appearance">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menu_article">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Articles</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu3">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="mi_new">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_new</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="mi_reply">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_reply</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="mi_cancel">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_cancel</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="mi_supsede">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_supsede</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="sep3">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="mi_parentgoto">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_gotoparent</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="mi_msgidgoto">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_msgidgoto</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="mi_history">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_history</property>
+                        <property name="use_action_appearance">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="sep4">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="mi_msgviewraw">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_msgviewraw</property>
+                        <property name="use_action_appearance">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="mi_rot13">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_rot13</property>
+                        <property name="use_action_appearance">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menu_prg">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Programme</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu4">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="mi_quit">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_quit</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="image">image1</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="mi_quitkill">
+                        <property name="visible">True</property>
+                        <property name="related_action">act_quitkill</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolbar" id="toolbar">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkToolButton" id="btn_new">
+                <property name="visible">True</property>
+                <property name="related_action">act_new</property>
+                <property name="use_action_appearance">True</property>
+                <property name="label" translatable="yes">toolbutton1</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="btn_reply">
+                <property name="visible">True</property>
+                <property name="related_action">act_reply</property>
+                <property name="use_action_appearance">True</property>
+                <property name="label" translatable="yes">toolbutton1</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSeparatorToolItem" id="bsep1">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="btn_next">
+                <property name="visible">True</property>
+                <property name="related_action">act_nextunread</property>
+                <property name="use_action_appearance">True</property>
+                <property name="label" translatable="yes">toolbutton1</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="btn_parent">
+                <property name="visible">True</property>
+                <property name="related_action">act_gotoparent</property>
+                <property name="use_action_appearance">True</property>
+                <property name="label" translatable="yes">toolbutton1</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSeparatorToolItem" id="bsep2">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="btn_quit">
+                <property name="visible">True</property>
+                <property name="related_action">act_quit</property>
+                <property name="use_action_appearance">True</property>
+                <property name="label" translatable="yes">toolbutton1</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHPaned" id="hpan_main">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="position">150</property>
+            <property name="position_set">True</property>
+            <child>
+              <object class="GtkTreeView" id="tree_groups">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+              </object>
+              <packing>
+                <property name="resize">False</property>
+                <property name="shrink">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVPaned" id="vpan_main">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="orientation">vertical</property>
+                <property name="position">96</property>
+                <property name="position_set">True</property>
+                <child>
+                  <object class="GtkHPaned" id="hpan_summary">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="position">400</property>
+                    <property name="position_set">True</property>
+                    <child>
+                      <object class="GtkTreeView" id="tree_overview">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                      </object>
+                      <packing>
+                        <property name="resize">True</property>
+                        <property name="shrink">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScrolledWindow" id="scrolledwindow1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="hscrollbar_policy">automatic</property>
+                        <property name="vscrollbar_policy">automatic</property>
+                        <child>
+                          <object class="GtkViewport" id="viewport1">
+                            <property name="visible">True</property>
+                            <property name="resize_mode">queue</property>
+                            <child>
+                              <object class="GtkDrawingArea" id="drawingarea1">
+                                <property name="visible">True</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="resize">True</property>
+                        <property name="shrink">False</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="resize">False</property>
+                    <property name="shrink">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkVPaned" id="vpan_article">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="orientation">vertical</property>
+                    <property name="position">64</property>
+                    <property name="position_set">True</property>
+                    <child>
+                      <object class="GtkTextView" id="tv_headers">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                      </object>
+                      <packing>
+                        <property name="resize">False</property>
+                        <property name="shrink">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkTextView" id="tv_article">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                      </object>
+                      <packing>
+                        <property name="resize">True</property>
+                        <property name="shrink">True</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="resize">True</property>
+                    <property name="shrink">True</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="resize">True</property>
+                <property name="shrink">True</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkStatusbar" id="statusbar">
+            <property name="visible">True</property>
+            <property name="spacing">2</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkActionGroup" id="actions"/>
+  <object class="GtkAction" id="act_grpgoto">
+    <property name="label">_Changer de groupe</property>
+  </object>
+  <object class="GtkAction" id="act_subscribe">
+    <property name="label">_G&#xE9;rer les abonnements</property>
+  </object>
+  <object class="GtkAction" id="act_grpsync">
+    <property name="label">_Rafra&#xEE;chir la liste des groupes</property>
+  </object>
+  <object class="GtkAction" id="act_sumgoto">
+    <property name="label">_Voir l'article num&#xE9;ro...</property>
+    <property name="tooltip">Voir le n-i&#xE8;me article du groupe</property>
+  </object>
+  <object class="GtkAction" id="act_overview">
+    <property name="label">Voir le sommai_re du groupe...</property>
+  </object>
+  <object class="GtkAction" id="act_nextunread">
+    <property name="label">Article sui_vant</property>
+    <property name="tooltip">Aller au prochain article non lu</property>
+    <property name="stock_id">gtk-go-forward</property>
+    <property name="always_show_image">True</property>
+  </object>
+  <object class="GtkAction" id="act_zapreplies">
+    <property name="label">Marquer la suite de la discussion comme lue</property>
+    <property name="stock_id">gtk-media-forward</property>
+    <property name="always_show_image">True</property>
+  </object>
+  <object class="GtkAction" id="act_zapthread">
+    <property name="label">Marquer la discussion comme lue</property>
+    <property name="stock_id">gtk-clear</property>
+    <property name="always_show_image">True</property>
+  </object>
+  <object class="GtkAction" id="act_unzapreplies">
+    <property name="label">Marquer la suite de la discussion comme non lue</property>
+    <property name="stock_id">gtk-media-rewind</property>
+    <property name="always_show_image">True</property>
+  </object>
+  <object class="GtkAction" id="act_unzapthread">
+    <property name="label">Marquer la discussion comme non lue</property>
+    <property name="stock_id">gtk-undelete</property>
+    <property name="always_show_image">True</property>
+  </object>
+  <object class="GtkAction" id="act_savetree">
+    <property name="label">Exporter l'arbre...</property>
+    <property name="tooltip">Enregistre l'arbre de la discussion dans une image</property>
+  </object>
+  <object class="GtkAction" id="act_new">
+    <property name="label">_Nouveau message</property>
+    <property name="tooltip">&#xC9;crire un nouveau message</property>
+    <property name="stock_id">gtk-new</property>
+    <property name="always_show_image">True</property>
+  </object>
+  <object class="GtkAction" id="act_reply">
+    <property name="label">_R&#xE9;pondre</property>
+    <property name="tooltip">R&#xE9;pondre &#xE0; un message</property>
+    <property name="stock_id">gtk-redo</property>
+    <property name="always_show_image">True</property>
+  </object>
+  <object class="GtkAction" id="act_cancel">
+    <property name="label">_Cancel</property>
+    <property name="tooltip">Effacer un message (cancel)</property>
+    <property name="stock_id">gtk-delete</property>
+    <property name="always_show_image">True</property>
+  </object>
+  <object class="GtkAction" id="act_supsede">
+    <property name="label">_Supersede</property>
+    <property name="tooltip">Remplacer un message (supersede)</property>
+    <property name="stock_id">gtk-strikethrough</property>
+    <property name="always_show_image">True</property>
+  </object>
+  <object class="GtkAction" id="act_gotoparent">
+    <property name="label">Aller au _parent</property>
+    <property name="tooltip">Aller au message parent</property>
+    <property name="stock_id">gtk-go-up</property>
+    <property name="always_show_image">True</property>
+  </object>
+  <object class="GtkAction" id="act_msgidgoto">
+    <property name="label">Suivre le Ms_gId...</property>
+    <property name="tooltip">Voir un article donn&#xE9; par son Message-Id</property>
+    <property name="stock_id">gtk-jump-to</property>
+    <property name="always_show_image">True</property>
+  </object>
+  <object class="GtkAction" id="act_msgviewraw">
+    <property name="label">_Voir un article brut</property>
+    <property name="tooltip">Voir l'article brut (tel qu'il est sur le serveur)</property>
+  </object>
+  <object class="GtkAction" id="act_history">
+    <property name="label">_Historique</property>
+    <property name="tooltip">Voir l'historique des messages consult&#xE9;s</property>
+  </object>
+  <object class="GtkAction" id="act_quit">
+    <property name="label">_Quitter</property>
+    <property name="tooltip">Quitter le programme</property>
+    <property name="stock_id">gtk-quit</property>
+    <property name="always_show_image">True</property>
+  </object>
+  <object class="GtkAction" id="act_quitkill">
+    <property name="label">Quitter _sans sauver</property>
+    <property name="tooltip">Quitter le programme sans enregistrer les messages lus</property>
+    <property name="stock_id">gtk-stop</property>
+    <property name="always_show_image">True</property>
+  </object>
+  <object class="GtkToggleAction" id="act_rot13">
+    <property name="label">Transform&#xE9;e par _Rot13</property>
+    <property name="tooltip">Afficher le message en rot13</property>
+    <property name="stock_id">gtk-sort-ascending</property>
+  </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+</interface>
