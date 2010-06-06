@@ -28,7 +28,8 @@ m4_ifndef([PKG_PROG_PKG_CONFIG],
   ACLOCAL="aclocal -I/other/macro/dir" before running autoreconf.])])
 PKG_PROG_PKG_CONFIG()
 PKG_CHECK_MODULES([GTK2], [gtk+-2.0 >= 2.16])
-PKG_CHECK_MODULES([GLIBMM], [glibmm-2.4])
+PKG_CHECK_MODULES([GLIBMM], [glibmm-2.4 >= 2.24])
+PKG_CHECK_MODULES([GIOMM], [giomm-2.4 >= 2.24])
 PKG_CHECK_MODULES([GTKMM], [gtkmm-2.4 >= 2.16])
 
 # Checks for header files.
@@ -47,5 +48,6 @@ AC_ARG_ENABLE(debug,
 	[CPPFLAGS="$CPPFLAGS -DNDEBUG"])
 
 AC_CONFIG_FILES([Makefile
+		 nntp/Makefile
 		 src/Makefile])
 AC_OUTPUT

@@ -2,6 +2,11 @@
 *.pyc
 *.pyo
 *.o
+configure
+config.log
+config.h
+config.h.in
+aclocal.m4
 Makefile
 Makefile.in
 src/guibuilder.h
