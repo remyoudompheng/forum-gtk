@@ -27,9 +27,9 @@ m4_ifndef([PKG_PROG_PKG_CONFIG],
   are in a different location, try setting the environment variable
   ACLOCAL="aclocal -I/other/macro/dir" before running autoreconf.])])
 PKG_PROG_PKG_CONFIG()
-PKG_CHECK_MODULES([GTK2], [gtk+-2.0 >= 2.12])
+PKG_CHECK_MODULES([GTK2], [gtk+-2.0 >= 2.16])
 PKG_CHECK_MODULES([GLIBMM], [glibmm-2.4])
-PKG_CHECK_MODULES([GTKMM], [gtkmm-2.4 >= 2.12])
+PKG_CHECK_MODULES([GTKMM], [gtkmm-2.4 >= 2.16])
 
 # Checks for header files.
 
