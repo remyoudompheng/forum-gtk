@@ -244,7 +244,6 @@
                         <property name="related_action">act_quit</property>
                         <property name="use_action_appearance">True</property>
                         <property name="use_underline">True</property>
-                        <property name="image">image1</property>
                         <property name="use_stock">True</property>
                       </object>
                     </child>
@@ -366,9 +365,31 @@
             <property name="position">150</property>
             <property name="position_set">True</property>
             <child>
-              <object class="GtkTreeView" id="tree_groups">
+              <object class="GtkScrolledWindow" id="scroll_grp">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="hscrollbar_policy">automatic</property>
+                <property name="vscrollbar_policy">automatic</property>
+                <child>
+                  <object class="GtkTreeView" id="tree_groups">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="headers_clickable">False</property>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="treecol_group">
+                        <property name="resizable">True</property>
+                        <property name="title">Conti</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="treecell_group"/>
+                          <attributes>
+                            <attribute name="font">4</attribute>
+                            <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="resize">False</property>
@@ -591,9 +612,5 @@
     <property name="label">Transform&#xE9;e par _Rot13</property>
     <property name="tooltip">Afficher le message en rot13</property>
     <property name="stock_id">gtk-sort-ascending</property>
-  </object>
-  <object class="GtkImage" id="image1">
-    <property name="visible">True</property>
-    <property name="stock">gtk-missing-image</property>
   </object>
 </interface>
