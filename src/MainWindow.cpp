@@ -56,6 +56,8 @@ MainWindow::MainWindow(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>
   connect_action("act_quit", &MainWindow::_on_quit_activate);
   connect_action("act_quitkill", &MainWindow::_on_quit_kill_activate);
 
+  uidef->get_widget_derived("tree_groups", grp_buffer);
+
   show_all();
 }
 

@@ -28,6 +28,7 @@
 
 #include <gtkmm.h>
 #include <string>
+#include "GrpBuffer.hpp"
 
 class MainWindow : public Gtk::Window
 {
@@ -37,6 +38,7 @@ public:
 
 protected:
   Glib::RefPtr<Gtk::Builder> uidef;
+  GrpBuffer *grp_buffer;
 
   void connect_action(Glib::ustring name, void(MainWindow::*callback)()) {
       Glib::RefPtr<Gtk::Action> obj;
