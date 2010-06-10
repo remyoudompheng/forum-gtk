@@ -1,1 +1,1 @@
-SUBDIRS = nntp src
+SUBDIRS = util nntp src

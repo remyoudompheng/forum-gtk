@@ -49,5 +49,6 @@ AC_ARG_ENABLE(debug,
 
 AC_CONFIG_FILES([Makefile
 		 nntp/Makefile
-		 src/Makefile])
+		 src/Makefile
+		 util/Makefile])
 AC_OUTPUT
