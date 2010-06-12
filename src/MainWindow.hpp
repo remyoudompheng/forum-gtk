@@ -29,12 +29,15 @@
 #include <gtkmm.h>
 #include <string>
 #include "GrpBuffer.hpp"
+#include <nntp.hpp>
 
 class MainWindow : public Gtk::Window
 {
 public:
   MainWindow(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& refGlade);
   ~MainWindow() {};
+
+  NNTPConnection nntp_server;
 
 protected:
   Glib::RefPtr<Gtk::Builder> uidef;

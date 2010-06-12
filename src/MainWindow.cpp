@@ -21,6 +21,8 @@
 
 #include "MainWindow.hpp"
 
+using namespace std;
+
 MainWindow::MainWindow(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& refGlade)
   : Gtk::Window(cobject),
     uidef(refGlade)
@@ -57,6 +59,13 @@ MainWindow::MainWindow(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>
   connect_action("act_quitkill", &MainWindow::_on_quit_kill_activate);
 
   uidef->get_widget_derived("tree_groups", grp_buffer);
+
+  nntp_server.connect("clipper.ens.fr:2019");
+  list<string> g;
+  nntp_server.groups_names(g);
+
+  GrpHierarchy gtree = GrpHierarchy(g);
+  grp_buffer->fill_tree(gtree);
 
   show_all();
 }
