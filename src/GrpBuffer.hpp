@@ -28,6 +28,7 @@
 
 #include <gtkmm.h>
 #include <list>
+#include <GrpHierarchy.hpp>
 
 class GrpBuffer : public Gtk::TreeView
 {
@@ -36,6 +37,7 @@ public:
   ~GrpBuffer() {};
 
   void fill_tree(std::list<std::string> groups);
+  void fill_tree(GrpHierarchy groups);
 
 protected:
   class GrpColumns : public Gtk::TreeModel::ColumnRecord
@@ -57,6 +59,8 @@ protected:
   Glib::RefPtr<Gtk::Builder> uidef;
   Glib::RefPtr<Gtk::TreeStore> data;
   GrpColumns *columns;
+
+  void fill_tree_branch(Gtk::TreeIter node, GrpHierarchy groups);
 };
 
 #endif //!TREE_BUFFER_H

@@ -10,10 +10,12 @@ forum_gtk_SOURCES = main.cpp guibuilder.h \
 	MainWindow.cpp MainWindow.hpp \
 	GrpBuffer.cpp GrpBuffer.hpp
 
-forum_gtk_CPPFLAGS = $(GTKMM_CFLAGS)
+forum_gtk_CPPFLAGS = $(GTKMM_CFLAGS) -I../nntp -I../util
 
 forum_gtk_LDADD = \
-	../nntp/libnntp.a $(GTKMM_LIBS)
+	../nntp/libnntp.a \
+	../util/libutiltypes.a \
+	$(GTKMM_LIBS)
 
 clean-local:
 	rm -f guibuilder.h

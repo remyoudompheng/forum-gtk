@@ -21,6 +21,10 @@
 
 #include "GrpBuffer.hpp"
 
+#ifdef DEBUG
+#include <iostream>
+#endif
+
 using namespace std;
 
 GrpBuffer::GrpBuffer(BaseObjectType* cobject,
@@ -46,5 +50,57 @@ void GrpBuffer::fill_tree(list<string> groups)
       (*it)[columns->subscribed] = false;
       (*it)[columns->internal] = false;
       (*it)[columns->font] = "normal";
+    }
+}
+
+void GrpBuffer::fill_tree_branch(Gtk::TreeIter node, GrpHierarchy groups)
+{
+  for(GrpHierarchy::iter i = groups.begin();
+      i != groups.end(); i++)
+    {
+      Gtk::TreeIter it;
+      it = data->append(node->children());
+      (*it)[columns->name] = i->second.name;
+      (*it)[columns->subscribed] = false;
+      (*it)[columns->font] = "normal";
+      if (i->second.name.empty()) {
+	(*it)[columns->internal] = true;
+	(*it)[columns->caption] = i->first;
+      } else {
+	(*it)[columns->internal] = false;
+	(*it)[columns->caption] = i->second.name;
+      }
+
+      if (i->second.has_child())
+	fill_tree_branch(it, i->second);
+    }
+}
+
+void GrpBuffer::fill_tree(GrpHierarchy groups)
+{
+  data->clear();
+  for(GrpHierarchy::iter i = groups.begin();
+      i != groups.end(); i++)
+    {
+      Gtk::TreeIter it;
+      it = data->append();
+      (*it)[columns->name] = i->second.name;
+      (*it)[columns->subscribed] = false;
+      (*it)[columns->font] = "normal";
+      if (i->second.name.empty()) {
+	// No group name; this is an internal node
+	(*it)[columns->internal] = true;
+	(*it)[columns->caption] = i->first;
+      } else {
+	(*it)[columns->internal] = false;
+	(*it)[columns->caption] = i->second.name;
+      }
+
+#ifdef DEBUG
+      cout << "Key : " << i->first << ", group " << i->second.name << endl;
+#endif
+
+      if (i->second.has_child())
+	fill_tree_branch(it, i->second);
     }
 }
