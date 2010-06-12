@@ -31,4 +31,30 @@ GrpHierarchy::GrpHierarchy(list<string> groups) {
 }
 
 void GrpHierarchy::populate(list<string> groups) {
+  for(list<string>::iterator i = groups.begin();
+      i != groups.end(); i++)
+    insert(*i, *i);
+}
+
+void GrpHierarchy::insert(string key, string group) {
+  size_t dot;
+  dot = key.find_first_of(".");
+
+  string prefix = key.substr(0, dot);
+  string suffix = key.substr(dot+1);
+
+  iter child = children.find(prefix);
+  if(child == children.end()) {
+    // Create a child if it does not exist
+    children[prefix].name.clear();
+    child = children.find(prefix);
+  }
+  
+  if (dot == string::npos) {
+    // There is no dot, it is a real group
+    child->second.name = group;
+  } else {
+    // There was a dot, insert group in the child
+    child->second.insert( suffix, group );
+  }
 }

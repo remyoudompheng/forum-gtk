@@ -38,12 +38,17 @@ public:
   ~GrpHierarchy();
 
   void populate(std::list<std::string> groups);
+  void insert(std::string key, std::string group);
+
+  bool is_a_leaf;
+  std::string name;
 
   // Iterators
   typedef std::map<std::string, GrpHierarchy>::iterator iter;
   iter begin() { return children.begin(); }
   iter end() { return children.end(); }
 
+  bool has_child() { return !children.empty(); }
 protected:
   std::map<std::string, GrpHierarchy> children;
 };
