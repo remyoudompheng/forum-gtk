@@ -29,7 +29,10 @@
 
 using namespace std;
 
-NNTPConnection::NNTPConnection(Glib::ustring server) {
+NNTPConnection::NNTPConnection() {
+}
+
+void NNTPConnection::connect(Glib::ustring server) {
   client = Gio::SocketClient::create();
   client->set_socket_type(Gio::SOCKET_TYPE_STREAM);
 #ifdef DEBUG
@@ -43,6 +46,10 @@ NNTPConnection::NNTPConnection(Glib::ustring server) {
   // Read welcome message: respcode = 200 means posting is allowed
   int code = getresp();
   read_only = (code == 201) ? true : false;
+}
+
+NNTPConnection::NNTPConnection(Glib::ustring server) {
+  connect(server);
 }
 
 NNTPConnection::~NNTPConnection() {
@@ -75,11 +82,29 @@ list<string> NNTPConnection::getmultiline() {
   return result;
 }
 
-int NNTPConnection::groups_list(list<group_entry> & groups) {
+int NNTPConnection::groups_names(list<string> & groups) {
   sout->put_string("LIST\n");
   int code = getresp();
   if (code / 10 != 21) return 0;
-  
+
+  list<string> result = getmultiline();
+  groups.clear();
+  for (list<string>::iterator i = result.begin(); i != result.end(); i++)
+    {
+      string g;
+      istringstream st(*i);
+      st >> g;
+      groups.push_back(g);
+    }
+
+  return 1;
+}
+
+int NNTPConnection::groups_info(list<group_entry> & groups) {
+  sout->put_string("LIST\n");
+  int code = getresp();
+  if (code / 10 != 21) return 0;
+
   list<string> result = getmultiline();
   groups.clear();
   for (list<string>::iterator i = result.begin(); i != result.end(); i++)

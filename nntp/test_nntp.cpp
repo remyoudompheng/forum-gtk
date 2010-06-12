@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
   NNTPConnection server("localhost:1776");
 
   list<group_entry> g;
-  server.groups_list(g);
+  server.groups_info(g);
 
   for(list<group_entry>::iterator i = g.begin(); i != g.end(); i++)
     {
