@@ -22,5 +22,16 @@ int main(int argc, char *argv[])
   int c, f, l;
   server.group_info("junk", c, f, l);
   cout << "Info junk : " << c << f << l << endl;
+
+  list<list<string> > overview;
+  int code = server.overview("control", 10, 20, overview);
+  cout << code << endl;
+  for(list<list<string> >::iterator i = overview.begin();
+      i != overview.end(); i++) {
+    for(list<string>::iterator j = i->begin(); j != i->end(); j++)
+      cout << *j << endl;
+    cout << endl;
+  }
+
   return 0;
 }

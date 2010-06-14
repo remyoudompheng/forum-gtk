@@ -127,3 +127,38 @@ int NNTPConnection::group_info(std::string name, int & count, int & first, int &
   st >> code >> count >> first >> last;
   return code;
 }
+
+int NNTPConnection::overview(const string group, const int first, const int last,
+			     list< list<string> > & result) {
+  // Switch group
+  sout->put_string("GROUP " + group + "\n");
+  int code = getresp();
+  if (code / 10 != 21) return code;
+  // Ask for overview
+  {
+    ostringstream s;
+    s << "XOVER " << first << "-" << last << endl;
+    sout->put_string(s.str());
+  }
+  code = getresp();
+  if (code / 10 != 22) return code;
+  // Fill with results
+  list<string> response = getmultiline();
+  result.clear();
+  for (list<string>::iterator i = response.begin();
+       i != response.end(); i++) {
+    list<string> item;
+    size_t pos;
+    string buf(*i);
+    while ( !buf.empty() ) {
+      // Slice into tokens
+      pos = buf.find("\t");
+      item.push_back(buf.substr(0, pos));
+      buf.erase(0, pos); buf.erase(0,1);
+    }
+
+    result.push_back(item);
+  }
+
+  return code;
+}

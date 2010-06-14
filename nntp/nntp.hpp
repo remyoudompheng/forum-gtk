@@ -47,6 +47,8 @@ public:
   int groups_names(std::list<std::string> & groups);
   int groups_info(std::list<group_entry> & groups);
   int group_info(std::string name, int & count, int & first, int & last);
+  int overview(const std::string group, const int first, const int last, 
+	       std::list<std::list<std::string> > & result);
 
 protected:
   Glib::ustring server;
